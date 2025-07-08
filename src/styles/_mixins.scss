@@ -1,0 +1,22 @@
+// Mixin for consistent theme transitions
+@mixin theme-transition {
+  transition: var(--theme-transition);
+}
+
+// Mixin for specific transition properties
+@mixin custom-theme-transition($properties...) {
+  $transition-list: ();
+  @each $property in $properties {
+    $transition-list: append(
+      $transition-list,
+      #{$property} var(--theme-transition-duration) var(--theme-transition-timing),
+      comma
+    );
+  }
+  transition: $transition-list;
+}
+
+// Utility class generator for theme transitions
+%theme-transition {
+  @include theme-transition;
+}

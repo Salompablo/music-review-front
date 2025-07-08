@@ -1,0 +1,54 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  font-family: 'Roboto', sans-serif;
+  background-color: var(--color-light-bg);
+  color: var(--color-light-text);
+  scroll-behavior: smooth;
+  transition: var(--theme-transition);
+}
+
+body.dark {
+  background-color: var(--color-dark-bg);
+  color: var(--color-dark-text);
+}
+
+// Force synchronization for all elements during theme switch
+body.theme-switching * {
+  transition: var(--theme-transition) !important;
+  transition-delay: 0s !important;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  transition: var(--theme-transition);
+}
+
+// Global utility class for consistent theme transitions
+.theme-transition {
+  transition: var(--theme-transition) !important;
+}
+
+// Ensure Material Design components also respect theme transitions
+mat-icon,
+.mat-icon {
+  transition: var(--theme-transition) !important;
+}
+
+// Buttons and interactive elements
+button,
+.mat-button,
+.mat-raised-button,
+.mat-fab,
+.mat-mini-fab {
+  transition: var(--theme-transition) !important;
+}

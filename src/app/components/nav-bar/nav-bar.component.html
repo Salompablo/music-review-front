@@ -1,1 +1,21 @@
-<p>nav-bar works!</p>
+<mat-toolbar class="mobile-navbar" [class.dark-mode]="darkMode">
+    <span class="app-title">TuneCritic</span>
+
+    <span class="spacer"></span>
+
+    <div class="right-buttons">
+        <button mat-icon-button (click)="toggleDarkMode()" aria-label="Toggle dark mode">
+            <mat-icon>{{ darkMode ? 'light_mode' : 'dark_mode' }}</mat-icon>
+        </button>
+
+        <button mat-icon-button (click)="toggleMenu()" aria-label="Toggle menu">
+            <mat-icon>menu</mat-icon>
+        </button>
+    </div>
+</mat-toolbar>
+
+<nav class="mobile-menu" [@slideMenu]="menuOpen ? 'open' : 'closed'" [class.dark-mode]="darkMode">
+    <a routerLink="/home" (click)="closeMenu()">Inicio</a>
+    <a routerLink="/reviews" (click)="closeMenu()">Reseñas</a>
+    <a routerLink="/perfil" (click)="closeMenu()">Perfil</a>
+    </nav>

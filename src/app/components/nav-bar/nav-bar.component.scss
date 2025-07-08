@@ -1,0 +1,76 @@
+:host {
+  display: block;
+  position: relative;
+  transition: var(--theme-transition);
+}
+
+.mobile-navbar {
+  display: flex;
+  align-items: center;
+  padding: 0 1rem;
+  background-color: var(--color-light-bg);
+  color: var(--color-light-text);
+  transition: var(--theme-transition);
+
+  .app-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    transition: var(--theme-transition);
+  }
+
+  .spacer {
+    flex: 1;
+  }
+
+  .right-buttons {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  mat-icon {
+    color: inherit;
+    transition: var(--theme-transition);
+  }
+
+  &.dark-mode {
+    background-color: var(--color-dark-bg);
+    color: var(--color-dark-text);
+
+    mat-icon {
+      color: var(--color-dark-text);
+    }
+  }
+}
+
+.mobile-menu {
+  background-color: var(--color-light-bg);
+  color: var(--color-light-text);
+  padding: 0 1rem;
+  position: absolute;
+  top: 56px;
+  right: 0;
+  left: 0;
+  z-index: 1000;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: var(--theme-transition);
+
+  a {
+    display: block;
+    padding: 0.75rem 1rem;
+    font-weight: bold;
+    text-decoration: none;
+    color: inherit;
+    transition: var(--theme-transition);
+
+    &:hover {
+      background-color: var(--color-hover);
+      color: var(--color-light-bg);
+    }
+  }
+
+  &.dark-mode {
+    background-color: var(--color-dark-bg);
+    color: var(--color-dark-text);
+  }
+}

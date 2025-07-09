@@ -49,6 +49,25 @@ import {
         animate('450ms cubic-bezier(0.4, 0, 0.2, 1)'),
       ]),
     ]),
+    trigger('fadeOverlay', [
+      state(
+        'hidden',
+        style({
+          opacity: 0,
+          visibility: 'hidden',
+        })
+      ),
+      state(
+        'visible',
+        style({
+          opacity: 1,
+          visibility: 'visible',
+        })
+      ),
+      transition('hidden <=> visible', [
+        animate('300ms cubic-bezier(0.4, 0, 0.2, 1)'),
+      ]),
+    ]),
   ],
 })
 export class NavBarComponent {
@@ -57,7 +76,7 @@ export class NavBarComponent {
 
   constructor(private themeService: ThemeService) {
     // Subscribe to theme changes
-    this.themeService.darkMode$.subscribe((isDark) => {
+    this.themeService.darkMode$.subscribe(isDark => {
       this.darkMode = isDark;
     });
   }

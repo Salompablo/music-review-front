@@ -1,12 +1,35 @@
 :root {
-  // Color variables
-  --color-light-bg: #ffffff;
-  --color-light-text: #00171f;
-  --color-dark-bg: #00171f;
-  --color-dark-text: #ffffff;
-  --color-accent: #007ea7;
-  --color-accent-light: #00a8e8;
-  --color-hover: #003459;
+  // Main color palette - https://coolors.co/palette/ffffff-00171f-003459-007ea7-00a8e8
+  --color-white: #ffffff;
+  --color-dark-navy: #00171f;
+  --color-navy: #003459;
+  --color-blue: #007ea7;
+  --color-light-blue: #00a8e8;
+
+  // Theme-specific colors
+  --color-light-bg: var(--color-white);
+  --color-light-text: var(--color-dark-navy);
+  --color-dark-bg: var(--color-dark-navy);
+  --color-dark-text: var(--color-white);
+
+  // Accent colors
+  --color-primary: var(--color-blue);
+  --color-primary-light: var(--color-light-blue);
+  --color-accent: var(--color-blue);
+  --color-accent-light: var(--color-light-blue);
+  --color-hover: var(--color-navy);
+
+  // Surface and border colors
+  --color-light-surface: #f8f9fa;
+  --color-dark-surface: #1a1f23;
+  --color-border-light: rgba(0, 23, 31, 0.08);
+  --color-border-dark: rgba(255, 255, 255, 0.15);
+
+  // Status colors (using the palette as base)
+  --color-success: #28a745;
+  --color-warning: #ffc107;
+  --color-error: #dc3545;
+  --color-info: var(--color-light-blue);
 
   // Transition variables for consistent theme switching
   --theme-transition-duration: 350ms;

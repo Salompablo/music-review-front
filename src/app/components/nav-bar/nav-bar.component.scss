@@ -11,20 +11,101 @@
   background-color: var(--color-light-bg);
   color: var(--color-light-text);
   transition: var(--theme-transition);
+  box-shadow: 0 2px 4px rgba(0, 23, 31, 0.1);
 
   .app-title {
     font-size: 1.2rem;
     font-weight: bold;
     transition: var(--theme-transition);
+    color: var(--color-primary);
   }
 
   .spacer {
     flex: 1;
   }
 
-  .right-buttons {
+  // Desktop navigation
+  .desktop-nav {
+    display: none;
+    align-items: center;
+    gap: 2rem;
+
+    .nav-link {
+      font-weight: 500;
+      text-decoration: none;
+      color: var(--color-primary);
+      transition: var(--theme-transition);
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+
+      &:hover {
+        background-color: rgba(0, 126, 167, 0.1);
+        color: var(--color-primary);
+      }
+    }
+
+    .auth-section {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+
+      .auth-link {
+        font-weight: 500;
+        text-decoration: none;
+        color: var(--color-primary);
+        transition: var(--theme-transition);
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+
+        &:hover {
+          background-color: rgba(0, 126, 167, 0.1);
+          color: var(--color-primary);
+        }
+      }
+
+      .separator {
+        width: 1px;
+        height: 24px;
+        background-color: var(--color-border-light);
+        transition: var(--theme-transition);
+      }
+
+      button {
+        color: var(--color-primary);
+        transition: var(--theme-transition);
+
+        &:hover {
+          background-color: rgba(0, 126, 167, 0.1);
+          color: var(--color-primary);
+        }
+      }
+    }
+
+    // Desktop breakpoint
+    @media (min-width: 768px) {
+      display: flex;
+    }
+  }
+
+  // Mobile buttons
+  .mobile-buttons {
     display: flex;
     gap: 0.5rem;
+
+    button {
+      color: var(--color-primary);
+      transition: var(--theme-transition);
+
+      &:hover {
+        background-color: rgba(0, 126, 167, 0.1);
+        color: var(--color-primary);
+      }
+    }
+
+    // Hide on desktop
+    @media (min-width: 768px) {
+      display: none;
+    }
   }
 
   mat-icon {
@@ -35,10 +116,89 @@
   &.dark-mode {
     background-color: var(--color-dark-bg);
     color: var(--color-dark-text);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+
+    .app-title {
+      color: var(--color-primary-light);
+    }
+
+    .desktop-nav {
+      .nav-link {
+        color: var(--color-primary-light);
+
+        &:hover {
+          background-color: rgba(0, 168, 232, 0.15);
+          color: var(--color-primary-light);
+        }
+      }
+
+      .auth-section {
+        .auth-link {
+          color: var(--color-primary-light);
+
+          &:hover {
+            background-color: rgba(0, 168, 232, 0.15);
+            color: var(--color-primary-light);
+          }
+        }
+
+        .separator {
+          background-color: var(--color-border-dark);
+        }
+
+        button {
+          color: var(--color-primary-light);
+
+          &:hover {
+            background-color: rgba(0, 168, 232, 0.15);
+            color: var(--color-primary-light);
+          }
+        }
+      }
+    }
+
+    .mobile-buttons button {
+      color: var(--color-primary-light);
+
+      &:hover {
+        background-color: rgba(0, 168, 232, 0.15);
+        color: var(--color-primary-light);
+      }
+    }
 
     mat-icon {
-      color: var(--color-dark-text);
+      color: var(--color-primary-light);
     }
+  }
+}
+
+// Overlay/backdrop for menu
+.menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 23, 31, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 999;
+  opacity: 0;
+  visibility: hidden;
+  transition: var(--theme-transition);
+  cursor: pointer;
+
+  // Hide on desktop
+  @media (min-width: 768px) {
+    display: none;
+  }
+
+  &.visible {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  &.dark-mode {
+    background-color: rgba(0, 23, 31, 0.7);
   }
 }
 
@@ -50,27 +210,53 @@
   top: 56px;
   right: 0;
   left: 0;
-  z-index: 1000;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1001; // Higher than overlay
+  box-shadow: 0 8px 16px rgba(0, 23, 31, 0.15);
   overflow: hidden;
   transition: var(--theme-transition);
+  border: 1px solid var(--color-border-light);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+
+  // Hide on desktop
+  @media (min-width: 768px) {
+    display: none;
+  }
 
   a {
     display: block;
     padding: 0.75rem 1rem;
     font-weight: bold;
     text-decoration: none;
-    color: inherit;
+    color: var(--color-primary);
     transition: var(--theme-transition);
+    border-bottom: 1px solid var(--color-border-light);
+
+    &:last-child {
+      border-bottom: none;
+    }
 
     &:hover {
-      background-color: var(--color-hover);
-      color: var(--color-light-bg);
+      background-color: var(--color-primary);
+      color: var(--color-white);
     }
   }
 
   &.dark-mode {
-    background-color: var(--color-dark-bg);
+    background-color: var(--color-dark-surface);
     color: var(--color-dark-text);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--color-border-dark);
+    border-top: none;
+
+    a {
+      color: var(--color-primary-light);
+      border-bottom: 1px solid var(--color-border-dark);
+
+      &:hover {
+        background-color: var(--color-primary-light);
+        color: var(--color-dark-navy);
+      }
+    }
   }
 }

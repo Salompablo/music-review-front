@@ -3,7 +3,22 @@
 
     <span class="spacer"></span>
 
-    <div class="right-buttons">
+    <!-- Desktop navigation -->
+    <div class="desktop-nav">
+        <a routerLink="/home" class="nav-link">Home</a>
+
+        <div class="auth-section">
+            <a routerLink="/signin" class="auth-link">Sign In</a>
+            <a routerLink="/signup" class="auth-link">Sign Up</a>
+            <div class="separator"></div>
+            <button mat-icon-button (click)="toggleDarkMode()" aria-label="Toggle dark mode">
+                <mat-icon>{{ darkMode ? 'light_mode' : 'dark_mode' }}</mat-icon>
+            </button>
+        </div>
+    </div>
+
+    <!-- Mobile buttons -->
+    <div class="mobile-buttons">
         <button mat-icon-button (click)="toggleDarkMode()" aria-label="Toggle dark mode">
             <mat-icon>{{ darkMode ? 'light_mode' : 'dark_mode' }}</mat-icon>
         </button>
@@ -14,8 +29,12 @@
     </div>
 </mat-toolbar>
 
+<!-- Overlay/backdrop for menu -->
+<div class="menu-overlay" [class.visible]="menuOpen" [class.dark-mode]="darkMode" (click)="closeMenu()"
+    [@fadeOverlay]="menuOpen ? 'visible' : 'hidden'">
+</div>
+
 <nav class="mobile-menu" [@slideMenu]="menuOpen ? 'open' : 'closed'" [class.dark-mode]="darkMode">
-    <a routerLink="/home" (click)="closeMenu()">Inicio</a>
-    <a routerLink="/reviews" (click)="closeMenu()">Reseñas</a>
-    <a routerLink="/perfil" (click)="closeMenu()">Perfil</a>
-    </nav>
+    <a routerLink="/home" (click)="closeMenu()">Home</a>
+    <a routerLink="/perfil" (click)="closeMenu()">Profile</a>
+</nav>

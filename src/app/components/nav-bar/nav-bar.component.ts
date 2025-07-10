@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -18,6 +20,8 @@ import {
   selector: 'app-nav-bar',
   standalone: true,
   imports: [
+    CommonModule,
+    RouterModule,
     MatSlideToggleModule,
     MatSidenavModule,
     MatToolbarModule,

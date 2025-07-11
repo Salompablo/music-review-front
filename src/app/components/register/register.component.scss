@@ -1,0 +1,285 @@
+:host {
+    display: block;
+    min-height: 100vh;
+    background-color: var(--color-light-bg);
+    color: var(--color-light-text);
+    transition: var(--theme-transition);
+}
+
+.register-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+}
+
+.register-card {
+    background-color: var(--color-light-surface);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    width: 100%;
+    max-width: 600px;                    // ← Aumentado de 500px a 600px
+    transition: var(--theme-transition);
+
+    @media (min-width: 768px) {
+        padding: 3rem;
+        max-width: 650px;                // ← Aumentado para desktop
+    }
+}
+
+.register-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.register-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
+    transition: var(--theme-transition);
+
+    @media (min-width: 768px) {
+        font-size: 2.5rem;
+    }
+}
+
+.register-subtitle {
+    font-size: 1rem;
+    color: var(--color-light-text);
+    margin: 0;
+    opacity: 0.8;
+}
+
+.register-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;                         // ← Asegurar que tome todo el ancho
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    width: 100%;                         // ← Asegurar que tome todo el ancho
+
+    @media (min-width: 480px) {
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;                       // ← Reducido para mejor ajuste
+    }
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;                         // ← Asegurar que tome todo el ancho
+    min-width: 0;                        // ← Permite que se reduzca si es necesario
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--color-primary);
+    font-size: 0.9rem;
+    transition: var(--theme-transition);
+}
+
+.form-input {
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--color-border-light);
+    border-radius: 8px;
+    font-size: 1rem;
+    background-color: var(--color-light-bg);
+    color: var(--color-light-text);
+    transition: var(--theme-transition);
+    width: 100%;                         // ← Asegurar ancho completo
+    box-sizing: border-box;              // ← Incluir padding en el cálculo del ancho
+    min-width: 0;                        // ← Permite que se reduzca si es necesario
+
+    &:focus {
+        outline: none;
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 3px rgba(0, 126, 167, 0.1);
+    }
+
+    &.error {
+        border-color: var(--color-error);
+    }
+
+    &::placeholder {
+        color: var(--color-light-text);
+        opacity: 0.6;
+    }
+}
+
+.password-input-container {
+    position: relative;
+    width: 100%;                         // ← Asegurar ancho completo
+}
+
+.password-toggle {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem;
+    color: var(--color-light-text);
+    opacity: 0.6;
+    transition: var(--theme-transition);
+
+    &:hover {
+        opacity: 1;
+    }
+
+    &:focus {
+        outline: none;
+        opacity: 1;
+    }
+}
+
+.password-toggle-icon {
+    font-size: 1.2rem;
+}
+
+.error-message {
+    color: var(--color-error);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    word-wrap: break-word;               // ← Permite que el texto se ajuste
+}
+
+.register-button {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    border: none;
+    border-radius: 8px;
+    padding: 0.875rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--theme-transition);
+    margin-top: 1rem;
+    width: 100%;                         // ← Asegurar ancho completo
+
+    &:hover:not(:disabled) {
+        background-color: var(--color-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 126, 167, 0.3);
+    }
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    &:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(0, 126, 167, 0.3);
+    }
+}
+
+.register-footer {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--color-border-light);
+    transition: var(--theme-transition);
+}
+
+.signin-prompt {
+    margin: 0;
+    color: var(--color-light-text);
+}
+
+.signin-link {
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: 600;
+    transition: var(--theme-transition);
+
+    &:hover {
+        color: var(--color-hover);
+        text-decoration: underline;
+    }
+}
+
+// Dark mode styles
+:host.dark-mode {
+    background-color: var(--color-dark-bg);
+    color: var(--color-dark-text);
+
+    .register-card {
+        background-color: var(--color-dark-surface);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    .register-title {
+        color: var(--color-primary-light);
+    }
+
+    .register-subtitle {
+        color: var(--color-dark-text);
+    }
+
+    .form-label {
+        color: var(--color-primary-light);
+    }
+
+    .form-input {
+        background-color: var(--color-dark-bg);
+        color: var(--color-dark-text);
+        border-color: var(--color-border-dark);
+
+        &:focus {
+            border-color: var(--color-primary-light);
+            box-shadow: 0 0 0 3px rgba(0, 168, 232, 0.1);
+        }
+
+        &::placeholder {
+            color: var(--color-dark-text);
+            opacity: 0.6;
+        }
+    }
+
+    .password-toggle {
+        color: var(--color-dark-text);
+    }
+
+    .register-button {
+        background-color: var(--color-primary-light);
+        color: var(--color-dark-navy);
+
+        &:hover:not(:disabled) {
+            background-color: var(--color-primary);
+            color: var(--color-white);
+            box-shadow: 0 4px 12px rgba(0, 168, 232, 0.3);
+        }
+
+        &:focus {
+            box-shadow: 0 0 0 3px rgba(0, 168, 232, 0.3);
+        }
+    }
+
+    .register-footer {
+        border-top-color: var(--color-border-dark);
+    }
+
+    .signin-prompt {
+        color: var(--color-dark-text);
+    }
+
+    .signin-link {
+        color: var(--color-primary-light);
+
+        &:hover {
+            color: var(--color-primary);
+        }
+    }
+}

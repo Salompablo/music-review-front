@@ -9,40 +9,43 @@ export class ThemeService {
   public darkMode$ = this.darkModeSubject.asObservable();
 
   constructor() {
-    // Check for saved theme preference or default to light mode
-    const savedTheme = localStorage.getItem('darkMode');
-    const isDarkMode = savedTheme === 'true';
-    this.setDarkMode(isDarkMode, false); // false to skip animation on initial load
+    this.initializeTheme();
+  }
+
+  private initializeTheme(): void {
+    if (typeof window !== 'undefined') {
+      const savedTheme = localStorage.getItem('darkMode');
+      const prefersDark = window.matchMedia(
+        '(prefers-color-scheme: dark)'
+      ).matches;
+      const isDark =
+        savedTheme === 'true' || (savedTheme === null && prefersDark);
+
+      // Apply theme immediately to body for instant inheritance
+      this.applyThemeToBody(isDark);
+      this.darkModeSubject.next(isDark);
+    }
+  }
+
+  private applyThemeToBody(isDark: boolean): void {
+    if (typeof window !== 'undefined' && document.body) {
+      if (isDark) {
+        document.body.classList.add('dark');
+      } else {
+        document.body.classList.remove('dark');
+      }
+    }
   }
 
   toggleDarkMode(): void {
-    const newDarkMode = !this.darkModeSubject.value;
-    this.setDarkMode(newDarkMode);
-  }
+    const newValue = !this.darkModeSubject.value;
 
-  setDarkMode(isDarkMode: boolean, animate: boolean = true): void {
-    if (animate) {
-      // Add temporary class to ensure all elements transition together
-      document.body.classList.add('theme-switching');
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('darkMode', newValue.toString());
+      this.applyThemeToBody(newValue);
     }
 
-    this.darkModeSubject.next(isDarkMode);
-
-    if (isDarkMode) {
-      document.body.classList.add('dark');
-    } else {
-      document.body.classList.remove('dark');
-    }
-
-    // Save preference
-    localStorage.setItem('darkMode', isDarkMode.toString());
-
-    if (animate) {
-      // Remove the temporary class after transition completes
-      setTimeout(() => {
-        document.body.classList.remove('theme-switching');
-      }, 350); // Match the transition duration in CSS variables
-    }
+    this.darkModeSubject.next(newValue);
   }
 
   getCurrentTheme(): boolean {

@@ -13,6 +13,12 @@
   transition: var(--theme-transition);
   box-shadow: 0 2px 4px rgba(0, 23, 31, 0.1);
 
+  body.dark & {
+    background-color: var(--color-dark-bg);
+    color: var(--color-dark-text);
+    box-shadow: 0 2px 4px rgba(255, 255, 255, 0.1);
+  }
+
   .app-title {
     font-size: 1.2rem;
     font-weight: bold;
@@ -197,7 +203,7 @@
     visibility: visible;
   }
 
-  &.dark-mode {
+  body.dark & {
     background-color: rgba(0, 23, 31, 0.7);
   }
 }

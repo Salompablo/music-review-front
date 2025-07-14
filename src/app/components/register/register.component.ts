@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostBinding } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -19,8 +19,7 @@ import { ThemeService } from '../../services/theme.service';
   styleUrl: './register.component.scss',
 })
 export class RegisterComponent implements OnInit, OnDestroy {
-  @HostBinding('class.dark-mode') darkMode = false;
-
+  darkMode = false;
   registerForm: FormGroup;
   showPassword = false;
   showConfirmPassword = false;

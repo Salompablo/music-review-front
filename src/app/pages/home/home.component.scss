@@ -186,51 +186,22 @@ body.dark :host .feature-item {
   }
 }
 
-.btn-primary,
-.btn-secondary {
-  padding: 0.75rem 2rem;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 1rem;
-  border: none;
-  cursor: pointer;
-  transition: var(--theme-transition);
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  &:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  }
-}
-
 .btn-primary {
-  background-color: var(--color-primary);
-  color: var(--color-white);
-
-  &:hover {
-    background-color: var(--color-hover);
-  }
-
-  body.dark & {
-    background-color: var(--color-primary-light);
-    color: var(--color-dark-navy);
+    background-color: transparent;
+    color: var(--color-primary);
+    border: 2px solid var(--color-primary);
+    padding: 0.75rem 2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: var(--theme-transition);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 
     &:hover {
-      background-color: var(--color-primary);
-      color: var(--color-white);
-    }
-  }
-}
-
-.btn-secondary {
-  background-color: transparent;
-  color: var(--color-primary);
-  border: 2px solid var(--color-primary);
-
-  &:hover {
     background-color: var(--color-primary);
     color: var(--color-white);
   }

@@ -20,15 +20,15 @@
   --color-hover: var(--color-navy);
 
   // Surface and border colors
-  --color-light-surface: #f8f9fa;
-  --color-dark-surface: #1a1f23;
+  --color-light-surface: #ffffff;
+  --color-dark-surface: #1a1a1a;
   --color-border-light: rgba(0, 23, 31, 0.08);
   --color-border-dark: rgba(255, 255, 255, 0.15);
 
   // Status colors (using the palette as base)
   --color-success: #28a745;
   --color-warning: #ffc107;
-  --color-error: #dc3545;
+  --color-error: #ef4444;
   --color-info: var(--color-light-blue);
 
   // Transition variables for consistent theme switching

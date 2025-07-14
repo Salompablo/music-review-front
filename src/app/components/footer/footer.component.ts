@@ -1,32 +1,30 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ThemeService } from '../../services/theme.service';
 
 @Component({
-  selector: 'app-home',
+  selector: 'app-footer',
   standalone: true,
-  imports: [CommonModule, RouterModule],
-  templateUrl: './home.component.html',
-  styleUrl: './home.component.scss',
+  imports: [CommonModule],
+  templateUrl: './footer.component.html',
+  styleUrl: './footer.component.scss',
 })
-export class HomeComponent implements OnInit, OnDestroy {
+export class FooterComponent implements OnInit, OnDestroy {
   darkMode = false;
   private themeSubscription?: Subscription;
 
   constructor(private themeService: ThemeService) {}
 
-  ngOnInit() {
-    // Subscribe to theme changes
+  ngOnInit(): void {
     this.themeSubscription = this.themeService.darkMode$.subscribe(
-      isDark => (this.darkMode = isDark)
+      isDarkMode => {
+        this.darkMode = isDarkMode;
+      }
     );
   }
 
-  ngOnDestroy() {
-    if (this.themeSubscription) {
-      this.themeSubscription.unsubscribe();
-    }
+  ngOnDestroy(): void {
+    this.themeSubscription?.unsubscribe();
   }
 }

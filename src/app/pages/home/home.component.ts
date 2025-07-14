@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostBinding } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -12,8 +12,7 @@ import { ThemeService } from '../../services/theme.service';
   styleUrl: './home.component.scss',
 })
 export class HomeComponent implements OnInit, OnDestroy {
-  @HostBinding('class.dark-mode') darkMode = false;
-
+  darkMode = false;
   private themeSubscription?: Subscription;
 
   constructor(private themeService: ThemeService) {}

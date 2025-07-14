@@ -6,6 +6,7 @@
   padding: 0;
 }
 
+// Global theme variables that inherit from body
 html,
 body {
   height: 100%;
@@ -16,15 +17,15 @@ body {
   transition: var(--theme-transition);
 }
 
+// Dark mode applied to body for instant inheritance
 body.dark {
   background-color: var(--color-dark-bg);
   color: var(--color-dark-text);
 }
 
-// Force synchronization for all elements during theme switch
-body.theme-switching * {
-  transition: var(--theme-transition) !important;
-  transition-delay: 0s !important;
+// All elements inherit theme by default - no flash
+* {
+  transition: var(--theme-transition);
 }
 
 a {

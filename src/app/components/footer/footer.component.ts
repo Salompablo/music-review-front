@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostBinding } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { ThemeService } from '../../services/theme.service';
@@ -11,7 +11,7 @@ import { ThemeService } from '../../services/theme.service';
   styleUrl: './footer.component.scss',
 })
 export class FooterComponent implements OnInit, OnDestroy {
-  @HostBinding('class.dark-mode') darkMode = false;
+  darkMode = false;
   private themeSubscription?: Subscription;
 
   constructor(private themeService: ThemeService) {}

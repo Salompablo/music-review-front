@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -10,6 +10,8 @@ import {
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ThemeService } from '../../services/theme.service';
+import { AuthService } from '../../services/auth.service';
+import { SignupRequest } from '../../interfaces/auth.interface';
 
 @Component({
   selector: 'app-register',
@@ -19,26 +21,28 @@ import { ThemeService } from '../../services/theme.service';
   styleUrl: './register.component.scss',
 })
 export class RegisterComponent implements OnInit, OnDestroy {
-  darkMode = false;
-  registerForm: FormGroup;
-  showPassword = false;
-  showConfirmPassword = false;
-  isSubmitting = false;
+  private fb = inject(FormBuilder);
+  private router = inject(Router);
+  private themeService = inject(ThemeService);
+  private authService = inject(AuthService);
 
+  darkMode = signal(false);
+  showPassword = signal(false);
+  showConfirmPassword = signal(false);
+  isSubmitting = signal(false);
+  errorMessage = signal<string | null>(null);
+
+  registerForm: FormGroup;
   private themeSubscription?: Subscription;
 
-  constructor(
-    private fb: FormBuilder,
-    private router: Router,
-    private themeService: ThemeService
-  ) {
+  constructor() {
     this.registerForm = this.createForm();
   }
 
   ngOnInit(): void {
     this.themeSubscription = this.themeService.darkMode$.subscribe(
       isDarkMode => {
-        this.darkMode = isDarkMode;
+        this.darkMode.set(isDarkMode);
       }
     );
   }
@@ -50,13 +54,12 @@ export class RegisterComponent implements OnInit, OnDestroy {
   private createForm(): FormGroup {
     return this.fb.group(
       {
-        firstName: ['', [Validators.required, Validators.minLength(2)]],
-        lastName: ['', [Validators.required, Validators.minLength(2)]],
         username: [
           '',
           [
             Validators.required,
             Validators.minLength(3),
+            Validators.maxLength(50),
             Validators.pattern(/^[a-zA-Z0-9_]+$/),
           ],
         ],
@@ -66,6 +69,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
           [
             Validators.required,
             Validators.minLength(8),
+            Validators.maxLength(120),
             Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/),
           ],
         ],
@@ -74,6 +78,135 @@ export class RegisterComponent implements OnInit, OnDestroy {
       { validators: this.passwordMatchValidator }
     );
   }
+
+  isFieldInvalid(fieldName: string): boolean {
+    const field = this.registerForm.get(fieldName);
+    return !!(field && field.invalid && (field.dirty || field.touched));
+  }
+
+  getFieldError(fieldName: string): string | null {
+    const field = this.registerForm.get(fieldName);
+
+    if (!field || !field.errors || !field.touched) {
+      return null;
+    }
+
+    const errors = field.errors;
+
+    if (errors['required']) {
+      return `${this.getFieldDisplayName(fieldName)} is required`;
+    }
+
+    if (errors['email']) {
+      return 'Enter a valid email';
+    }
+
+    if (errors['minlength']) {
+      const requiredLength = errors['minlength'].requiredLength;
+      return `Minimum ${requiredLength} characters`;
+    }
+
+    if (errors['maxlength']) {
+      const requiredLength = errors['maxlength'].requiredLength;
+      return `Maximum ${requiredLength} characters`;
+    }
+
+    if (errors['pattern']) {
+      if (fieldName === 'username') {
+        return 'Only letters, numbers, and underscores';
+      }
+      if (fieldName === 'password') {
+        return 'Must contain an uppercase letter, a lowercase letter, and a number';
+      }
+    }
+
+    if (errors['passwordMismatch']) {
+      return 'Passwords do not match';
+    }
+
+    return 'Invalid field';
+  }
+
+  private getFieldDisplayName(fieldName: string): string {
+    const displayNames: { [key: string]: string } = {
+      username: 'User name',
+      email: 'Email',
+      password: 'Password',
+      confirmPassword: 'Confirm password',
+    };
+
+    return displayNames[fieldName] || fieldName;
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword.set(!this.showPassword());
+  }
+
+  toggleConfirmPasswordVisibility(): void {
+    this.showConfirmPassword.set(!this.showConfirmPassword());
+  }
+
+  onSubmit(): void {
+    if (this.registerForm.valid && !this.isSubmitting()) {
+      this.isSubmitting.set(true);
+      this.errorMessage.set(null);
+
+      // Setting data
+      const signupData: SignupRequest = {
+        username: this.registerForm.value.username.trim(),
+        email: this.registerForm.value.email.trim().toLowerCase(),
+        password: this.registerForm.value.password,
+      };
+
+      // API call
+      this.authService.register(signupData).subscribe({
+        next: response => {
+          console.log('Registration successful:', response);
+          this.isSubmitting.set(false);
+
+          // Auto redirect
+          this.router.navigate(['/dashboard']);
+        },
+        error: error => {
+          console.error('Registration failed:', error);
+          this.isSubmitting.set(false);
+
+          if (error.includes('already exists')) {
+            this.errorMessage.set('Username or email is already registered');
+          } else if (error.includes('Username already taken')) {
+            this.errorMessage.set('Username is already taken');
+          } else {
+            this.errorMessage.set('Registration error.Please try again.');
+          }
+        },
+      });
+    } else {
+      //Mark all fields as touched to show errors
+      this.markAllFieldsAsTouched();
+    }
+  }
+
+  private markAllFieldsAsTouched(): void {
+    Object.keys(this.registerForm.controls).forEach(key => {
+      this.registerForm.get(key)?.markAsTouched();
+    });
+  }
+
+  // ============ Template methods ============
+
+  hasError(): boolean {
+    return !!this.errorMessage();
+  }
+
+  clearError(): void {
+    this.errorMessage.set(null);
+  }
+
+  navigateToLogin(): void {
+    this.router.navigate(['/login']);
+  }
+
+  // ============ Password validation methods ============
 
   private passwordMatchValidator(
     control: AbstractControl
@@ -90,49 +223,30 @@ export class RegisterComponent implements OnInit, OnDestroy {
       return { passwordMismatch: true };
     }
 
+    if (confirmPassword.hasError('passwordMismatch')) {
+      confirmPassword.setErrors(null);
+    }
+
     return null;
   }
 
-  isFieldInvalid(fieldName: string): boolean {
-    const field = this.registerForm.get(fieldName);
-    return !!(field && field.invalid && (field.dirty || field.touched));
+  hasMinLength(): boolean {
+    const password = this.registerForm.get('password')?.value;
+    return password ? password.length >= 8 : false;
   }
 
-  togglePasswordVisibility(): void {
-    this.showPassword = !this.showPassword;
+  hasUppercase(): boolean {
+    const password = this.registerForm.get('password')?.value;
+    return password ? /[A-Z]/.test(password) : false;
   }
 
-  toggleConfirmPasswordVisibility(): void {
-    this.showConfirmPassword = !this.showConfirmPassword;
+  hasLowercase(): boolean {
+    const password = this.registerForm.get('password')?.value;
+    return password ? /[a-z]/.test(password) : false;
   }
 
-  onSubmit(): void {
-    if (this.registerForm.valid) {
-      this.isSubmitting = true;
-
-      const formData = {
-        firstName: this.registerForm.value.firstName,
-        lastName: this.registerForm.value.lastName,
-        username: this.registerForm.value.username,
-        email: this.registerForm.value.email,
-        password: this.registerForm.value.password,
-      };
-
-      // TODO: Replace with actual API call
-      console.log('Registration data:', formData);
-
-      // Simulate API call
-      setTimeout(() => {
-        this.isSubmitting = false;
-        // TODO: Handle successful registration
-        console.log('Registration successful');
-        // this.router.navigate(['/signin']);
-      }, 2000);
-    } else {
-      // Mark all fields as touched to show validation errors
-      Object.keys(this.registerForm.controls).forEach(key => {
-        this.registerForm.get(key)?.markAsTouched();
-      });
-    }
+  hasNumber(): boolean {
+    const password = this.registerForm.get('password')?.value;
+    return password ? /\d/.test(password) : false;
   }
 }

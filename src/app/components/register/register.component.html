@@ -1,137 +1,145 @@
 <div class="register-container">
-    <div class="register-card">
-        <!-- Header Section -->
-        <div class="register-header">
-            <h1 class="register-title">Join TuneCritic</h1>
-            <p class="register-subtitle">Create your account and start discovering music</p>
-        </div>
-
-        <!-- Registration Form -->
-        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
-            <!-- First Name & Last Name Row -->
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="firstName" class="form-label">First Name</label>
-                    <input type="text" id="firstName" formControlName="firstName" class="form-input"
-                        [class.error]="isFieldInvalid('firstName')" placeholder="Enter your first name" />
-                    <div class="error-message" *ngIf="isFieldInvalid('firstName')">
-                        <span *ngIf="registerForm.get('firstName')?.errors?.['required']">
-                            First name is required
-                        </span>
-                        <span *ngIf="registerForm.get('firstName')?.errors?.['minlength']">
-                            First name must be at least 2 characters
-                        </span>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="lastName" class="form-label">Last Name</label>
-                    <input type="text" id="lastName" formControlName="lastName" class="form-input"
-                        [class.error]="isFieldInvalid('lastName')" placeholder="Enter your last name" />
-                    <div class="error-message" *ngIf="isFieldInvalid('lastName')">
-                        <span *ngIf="registerForm.get('lastName')?.errors?.['required']">
-                            Last name is required
-                        </span>
-                        <span *ngIf="registerForm.get('lastName')?.errors?.['minlength']">
-                            Last name must be at least 2 characters
-                        </span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Username -->
-            <div class="form-group">
-                <label for="username" class="form-label">Username</label>
-                <input type="text" id="username" formControlName="username" class="form-input"
-                    [class.error]="isFieldInvalid('username')" placeholder="Choose a unique username" />
-                <div class="error-message" *ngIf="isFieldInvalid('username')">
-                    <span *ngIf="registerForm.get('username')?.errors?.['required']">
-                        Username is required
-                    </span>
-                    <span *ngIf="registerForm.get('username')?.errors?.['minlength']">
-                        Username must be at least 3 characters
-                    </span>
-                    <span *ngIf="registerForm.get('username')?.errors?.['pattern']">
-                        Username can only contain letters, numbers, and underscores
-                    </span>
-                </div>
-            </div>
-
-            <!-- Email -->
-            <div class="form-group">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" id="email" formControlName="email" class="form-input"
-                    [class.error]="isFieldInvalid('email')" placeholder="Enter your email address" />
-                <div class="error-message" *ngIf="isFieldInvalid('email')">
-                    <span *ngIf="registerForm.get('email')?.errors?.['required']">
-                        Email is required
-                    </span>
-                    <span *ngIf="registerForm.get('email')?.errors?.['email']">
-                        Please enter a valid email address
-                    </span>
-                </div>
-            </div>
-
-            <!-- Password -->
-            <div class="form-group">
-                <label for="password" class="form-label">Password</label>
-                <div class="password-input-container">
-                    <input [type]="showPassword ? 'text' : 'password'" id="password" formControlName="password"
-                        class="form-input" [class.error]="isFieldInvalid('password')"
-                        placeholder="Create a strong password" />
-                    <button type="button" class="password-toggle" (click)="togglePasswordVisibility()"
-                        aria-label="Toggle password visibility">
-                        <span class="password-toggle-icon">{{ showPassword ? '🙈' : '👁️' }}</span>
-                    </button>
-                </div>
-                <div class="error-message" *ngIf="isFieldInvalid('password')">
-                    <span *ngIf="registerForm.get('password')?.errors?.['required']">
-                        Password is required
-                    </span>
-                    <span *ngIf="registerForm.get('password')?.errors?.['minlength']">
-                        Password must be at least 8 characters
-                    </span>
-                    <span *ngIf="registerForm.get('password')?.errors?.['pattern']">
-                        Password must contain at least one uppercase letter, one lowercase letter, and one number
-                    </span>
-                </div>
-            </div>
-
-            <!-- Confirm Password -->
-            <div class="form-group">
-                <label for="confirmPassword" class="form-label">Confirm Password</label>
-                <div class="password-input-container">
-                    <input [type]="showConfirmPassword ? 'text' : 'password'" id="confirmPassword"
-                        formControlName="confirmPassword" class="form-input"
-                        [class.error]="isFieldInvalid('confirmPassword')" placeholder="Confirm your password" />
-                    <button type="button" class="password-toggle" (click)="toggleConfirmPasswordVisibility()"
-                        aria-label="Toggle confirm password visibility">
-                        <span class="password-toggle-icon">{{ showConfirmPassword ? '🙈' : '👁️' }}</span>
-                    </button>
-                </div>
-                <div class="error-message" *ngIf="isFieldInvalid('confirmPassword')">
-                    <span *ngIf="registerForm.get('confirmPassword')?.errors?.['required']">
-                        Please confirm your password
-                    </span>
-                    <span *ngIf="registerForm.get('confirmPassword')?.errors?.['passwordMismatch']">
-                        Passwords do not match
-                    </span>
-                </div>
-            </div>
-
-            <!-- Submit Button -->
-            <button type="submit" class="register-button" [disabled]="registerForm.invalid || isSubmitting">
-                <span *ngIf="!isSubmitting">Create Account</span>
-                <span *ngIf="isSubmitting">Creating Account...</span>
-            </button>
-        </form>
-
-        <!-- Sign In Link -->
-        <div class="register-footer">
-            <p class="signin-prompt">
-                Already have an account?
-                <a href="/signin" class="signin-link">Sign In</a>
-            </p>
-        </div>
+  <div class="register-card">
+    <!-- Header Section -->
+    <div class="register-header">
+      <h1 class="register-title">Join TuneCritic</h1>
+      <p class="register-subtitle">Create your account and start discovering music</p>
     </div>
+
+    <!-- Error Message Global -->
+    <div class="alert alert-error" *ngIf="hasError()" (click)="clearError()">
+      <span class="alert-icon">⚠️</span>
+      <span class="alert-text">{{ errorMessage() }}</span>
+      <button type="button" class="alert-close" aria-label="Close error message">×</button>
+    </div>
+
+    <!-- Registration Form -->
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
+      <!-- Username -->
+      <div class="form-group">
+        <label for="username" class="form-label">Username</label>
+        <input
+          type="text"
+          id="username"
+          formControlName="username"
+          class="form-input"
+          [class.error]="isFieldInvalid('username')"
+          placeholder="Choose a unique username"
+          autocomplete="username"
+        />
+        <div class="error-message" *ngIf="isFieldInvalid('username')">
+          {{ getFieldError('username') }}
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="form-group">
+        <label for="email" class="form-label">Email</label>
+        <input
+          type="email"
+          id="email"
+          formControlName="email"
+          class="form-input"
+          [class.error]="isFieldInvalid('email')"
+          placeholder="Enter your email address"
+          autocomplete="email"
+        />
+        <div class="error-message" *ngIf="isFieldInvalid('email')">
+          {{ getFieldError('email') }}
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="form-group">
+        <label for="password" class="form-label">Password</label>
+        <div class="password-input-container">
+          <input
+            [type]="showPassword() ? 'text' : 'password'"
+            id="password"
+            formControlName="password"
+            class="form-input"
+            [class.error]="isFieldInvalid('password')"
+            placeholder="Create a strong password"
+            autocomplete="new-password"
+          />
+          <button
+            type="button"
+            class="password-toggle"
+            (click)="togglePasswordVisibility()"
+            aria-label="Toggle password visibility"
+          >
+            <span class="password-toggle-icon">{{ showPassword() ? '🙈' : '👁️' }}</span>
+          </button>
+        </div>
+        <div class="error-message" *ngIf="isFieldInvalid('password')">
+          {{ getFieldError('password') }}
+        </div>
+        <!-- Password requirements hint -->
+        <div
+          class="password-requirements"
+          *ngIf="registerForm.get('password')?.touched && !registerForm.get('password')?.valid"
+        >
+          <p class="requirements-title">Password must contain:</p>
+          <ul class="requirements-list">
+            <li [class.valid]="hasMinLength()">At least 8 characters</li>
+            <li [class.valid]="hasUppercase()">One uppercase letter</li>
+            <li [class.valid]="hasLowercase()">One lowercase letter</li>
+            <li [class.valid]="hasNumber()">One number</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Confirm Password -->
+      <div class="form-group">
+        <label for="confirmPassword" class="form-label">Confirm Password</label>
+        <div class="password-input-container">
+          <input
+            [type]="showConfirmPassword() ? 'text' : 'password'"
+            id="confirmPassword"
+            formControlName="confirmPassword"
+            class="form-input"
+            [class.error]="isFieldInvalid('confirmPassword')"
+            placeholder="Confirm your password"
+            autocomplete="new-password"
+          />
+          <button
+            type="button"
+            class="password-toggle"
+            (click)="toggleConfirmPasswordVisibility()"
+            aria-label="Toggle confirm password visibility"
+          >
+            <span class="password-toggle-icon">{{ showConfirmPassword() ? '🙈' : '👁️' }}</span>
+          </button>
+        </div>
+        <div class="error-message" *ngIf="isFieldInvalid('confirmPassword')">
+          {{ getFieldError('confirmPassword') }}
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <button
+        type="submit"
+        class="register-button"
+        [disabled]="registerForm.invalid || isSubmitting()"
+        [class.loading]="isSubmitting()"
+      >
+        <span *ngIf="!isSubmitting()" class="button-text">
+          <span class="button-icon">🎵</span>
+          Create Account
+        </span>
+        <span *ngIf="isSubmitting()" class="button-loading">
+          <span class="spinner"></span>
+          Creating Account...
+        </span>
+      </button>
+    </form>
+
+    <!-- Sign In Link -->
+    <div class="register-footer">
+      <p class="signin-prompt">
+        Already have an account?
+        <button type="button" class="signin-link" (click)="navigateToLogin()">Sign In</button>
+      </p>
+    </div>
+  </div>
 </div>

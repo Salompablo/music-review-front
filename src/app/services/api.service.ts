@@ -1,73 +1,78 @@
-import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpHeaders,
+  HttpErrorResponse,
+} from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { catchError, Observable, pipe, throwError } from 'rxjs';
+import { catchError, Observable, throwError } from 'rxjs';
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ApiService {
   private baseUrl = 'http://localhost:8080';
 
-  constructor(private http: HttpClient) { }
-  
+  constructor(private http: HttpClient) {}
+
   // GET method
   get<T>(endpoint: string): Observable<T> {
-    return this.http.get<T>(`${this.baseUrl}${endpoint}`, {
-      headers: this.getHeaders()
-    }).pipe(
-      catchError(this.handleError)
-    );
+    return this.http
+      .get<T>(`${this.baseUrl}${endpoint}`)
+      .pipe(catchError(this.handleError));
   }
 
   // POST method
   post<T>(endpoint: string, data: any): Observable<T> {
-    return this.http.post<T>(`${this.baseUrl}${endpoint}`, data, {
-      headers: this.getHeaders()
-    }).pipe(
-      catchError(this.handleError)
-    );
+    return this.http
+      .post<T>(`${this.baseUrl}${endpoint}`, data, {
+        headers: this.getContentTypeHeader(data),
+      })
+      .pipe(catchError(this.handleError));
   }
 
   // PUT method
   put<T>(endpoint: string, data: any): Observable<T> {
-    return this.http.put<T>(`${this.baseUrl}${endpoint}`, data, {
-      headers: this.getHeaders()
-    }).pipe(
-      catchError(this.handleError)
-    );
+    return this.http
+      .put<T>(`${this.baseUrl}${endpoint}`, data, {
+        headers: this.getContentTypeHeader(data),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  // PATCH method
+  patch<T>(endpoint: string, data: any): Observable<T> {
+    return this.http
+      .patch<T>(`${this.baseUrl}${endpoint}`, data, {
+        headers: this.getContentTypeHeader(data),
+      })
+      .pipe(catchError(this.handleError));
   }
 
   // DELETE method
   delete<T>(endpoint: string): Observable<T> {
-    return this.http.delete<T>(`${this.baseUrl}${endpoint}`, {
-      headers: this.getHeaders()
-    }).pipe(
-      catchError(this.handleError)
-    );
+    return this.http
+      .delete<T>(`${this.baseUrl}${endpoint}`)
+      .pipe(catchError(this.handleError));
   }
 
-  // Headers with JWT token
-  private getHeaders(): HttpHeaders {
-    const token = localStorage.getItem('accessToken');
-    let headers = new HttpHeaders({
-      'Content-Type': 'application/json'
-    });
+  // Only for Content-Type
+  private getContentTypeHeader(data?: any): HttpHeaders {
+    let headers = new HttpHeaders();
 
-    if (token) {
-      headers = headers.set('Authorization', `Bearer ${token}`);
+    // Only add Content-Type if it's not FormData
+    if (!(data instanceof FormData)) {
+      headers = headers.set('Content-Type', 'application/json');
     }
 
     return headers;
   }
 
   //Error handler
-  private handleError(error: HttpErrorResponse) {
+  private handleError = (error: HttpErrorResponse) => {
     let errorMessage = 'Unknown error';
 
     if (error.error instanceof ErrorEvent) {
-      //Client-side error
       errorMessage = `Error: ${error.error.message}`;
     } else {
-      //Server-side error
       errorMessage = `Code: ${error.status}\nMessage: ${error.message}`;
     }
 

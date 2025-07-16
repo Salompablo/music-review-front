@@ -1,40 +1,93 @@
 <mat-toolbar class="mobile-navbar" [class.dark-mode]="darkMode">
-    <span class="app-title">TuneCritic</span>
+  <span class="app-title">TuneCritic</span>
 
-    <span class="spacer"></span>
+  <span class="spacer"></span>
 
-    <!-- Desktop navigation -->
-    <div class="desktop-nav">
-        <a routerLink="/home" class="nav-link">Home</a>
+  <!-- Desktop navigation -->
+  <div class="desktop-nav">
+    <a routerLink="/home" class="nav-link">Home</a>
 
-        <div class="auth-section">
-            <a routerLink="/signin" class="auth-link">Sign In</a>
-            <a routerLink="/signup" class="auth-link">Sign Up</a>
-            <div class="separator"></div>
-            <button mat-icon-button (click)="toggleDarkMode()" aria-label="Toggle dark mode">
-                <mat-icon>{{ darkMode ? 'light_mode' : 'dark_mode' }}</mat-icon>
-            </button>
-        </div>
-    </div>
-
-    <!-- Mobile buttons -->
-    <div class="mobile-buttons">
+    <!-- User NOT authenticated -->
+    @if (!isAuthenticated()) {
+      <div class="auth-section">
+        <a routerLink="/signin" class="auth-link">Sign In</a>
+        <a routerLink="/register" class="auth-link">Sign Up</a>
+        <div class="separator"></div>
         <button mat-icon-button (click)="toggleDarkMode()" aria-label="Toggle dark mode">
-            <mat-icon>{{ darkMode ? 'light_mode' : 'dark_mode' }}</mat-icon>
+          <mat-icon>{{ darkMode ? 'light_mode' : 'dark_mode' }}</mat-icon>
+        </button>
+      </div>
+    }
+    <!-- User authenticated -->
+    @if (isAuthenticated()) {
+      <div class="auth-section">
+        <button mat-button [matMenuTriggerFor]="userMenu" class="user-menu-button">
+          <mat-icon>account_circle</mat-icon>
+          <span>{{ currentUser()?.username }}</span>
+          <mat-icon>arrow_drop_down</mat-icon>
         </button>
 
-        <button mat-icon-button (click)="toggleMenu()" aria-label="Toggle menu">
-            <mat-icon>menu</mat-icon>
+        <mat-menu #userMenu="matMenu" class="user-menu-dropdown">
+          <button mat-menu-item routerLink="/profile">
+            <mat-icon>person</mat-icon>
+            <span>My Profile</span>
+          </button>
+          <button mat-menu-item routerLink="/settings">
+            <mat-icon>settings</mat-icon>
+            <span>Settings</span>
+          </button>
+          <mat-divider></mat-divider>
+          <button mat-menu-item (click)="logout()" class="logout-item">
+            <mat-icon>logout</mat-icon>
+            <span>Logout</span>
+          </button>
+        </mat-menu>
+
+        <div class="separator"></div>
+        <button mat-icon-button (click)="toggleDarkMode()" aria-label="Toggle dark mode">
+          <mat-icon>{{ darkMode ? 'light_mode' : 'dark_mode' }}</mat-icon>
         </button>
-    </div>
+      </div>
+    }
+  </div>
+
+  <!-- Mobile buttons -->
+  <div class="mobile-buttons">
+    <button mat-icon-button (click)="toggleDarkMode()" aria-label="Toggle dark mode">
+      <mat-icon>{{ darkMode ? 'light_mode' : 'dark_mode' }}</mat-icon>
+    </button>
+
+    <button mat-icon-button (click)="toggleMenu()" aria-label="Toggle menu">
+      <mat-icon>menu</mat-icon>
+    </button>
+  </div>
 </mat-toolbar>
 
 <!-- Overlay/backdrop for menu -->
-<div class="menu-overlay" [class.visible]="menuOpen" [class.dark-mode]="darkMode" (click)="closeMenu()"
-    [@fadeOverlay]="menuOpen ? 'visible' : 'hidden'">
-</div>
+<div
+  class="menu-overlay"
+  [class.visible]="menuOpen"
+  [class.dark-mode]="darkMode"
+  (click)="closeMenu()"
+  [@fadeOverlay]="menuOpen ? 'visible' : 'hidden'"
+></div>
 
 <nav class="mobile-menu" [@slideMenu]="menuOpen ? 'open' : 'closed'" [class.dark-mode]="darkMode">
-    <a routerLink="/home" (click)="closeMenu()">Home</a>
-    <a routerLink="/perfil" (click)="closeMenu()">Profile</a>
+  <a routerLink="/home" (click)="closeMenu()">Home</a>
+
+  <!-- Mobile menu - User NOT authenticated -->
+  @if (!isAuthenticated()) {
+    <a routerLink="/signin" (click)="closeMenu()">Sign In</a>
+    <a routerLink="/register" (click)="closeMenu()">Sign Up</a>
+  }
+
+  <!-- Mobile menu - User authenticated -->
+  @if (isAuthenticated()) {
+    <div class="user-info">
+      <span class="username">{{ currentUser()?.username }}</span>
+    </div>
+    <a routerLink="/profile" (click)="closeMenu()">My Profile</a>
+    <a routerLink="/settings" (click)="closeMenu()">Settings</a>
+    <a (click)="logout()" class="logout-link">Logout</a>
+  }
 </nav>

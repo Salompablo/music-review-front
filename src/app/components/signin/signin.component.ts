@@ -127,14 +127,21 @@ export class SigninComponent implements OnInit, OnDestroy {
         password: this.signinForm.value.password,
       };
 
-      this.authService.login(loginData).subscribe({
+      const rememberMe = this.signinForm.value.rememberMe;
+
+      this.authService.login(loginData, rememberMe).subscribe({
         next: response => {
           this.configService.logSecure('Login successful');
           this.isSubmitting.set(false);
 
-          if (this.signinForm.value.rememberMe) {
-            // TODO: Implement remember me functionality
-            this.configService.log('Remember me activated');
+          if (rememberMe) {
+            this.configService.log(
+              'Remember me activated - session will persist'
+            );
+          } else {
+            this.configService.log(
+              'Temporary session - will expire when browser closes'
+            );
           }
 
           this.router.navigate(['/dashboard']);

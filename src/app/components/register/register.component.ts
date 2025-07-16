@@ -12,6 +12,7 @@ import { Subscription } from 'rxjs';
 import { ThemeService } from '../../services/theme.service';
 import { AuthService } from '../../services/auth.service';
 import { ConfigService } from '../../services/config.service';
+import { ToastService } from '../../services/toast.service';
 import { SignupRequest } from '../../interfaces/auth.interface';
 
 @Component({
@@ -27,6 +28,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   private themeService = inject(ThemeService);
   private authService = inject(AuthService);
   private configService = inject(ConfigService);
+  private toastService = inject(ToastService);
 
   darkMode = signal(false);
   showPassword = signal(false);
@@ -166,8 +168,14 @@ export class RegisterComponent implements OnInit, OnDestroy {
           this.configService.logSecure('Registration successful');
           this.isSubmitting.set(false);
 
-          // Auto redirect
-          this.router.navigate(['/dashboard']);
+          // Show success toast
+          this.toastService.success(
+            'Account created successfully! Please sign in to continue.',
+            5000
+          );
+
+          // Navigate to home page instead of dashboard
+          this.router.navigate(['/home']);
         },
         error: error => {
           this.configService.logError('Registration failed', error);

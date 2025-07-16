@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -7,6 +7,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
 import { ThemeService } from '../../services/theme.service';
 import {
   trigger,
@@ -15,6 +16,7 @@ import {
   transition,
   animate,
 } from '@angular/animations';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-nav-bar',
@@ -28,6 +30,7 @@ import {
     MatIconModule,
     MatListModule,
     MatButtonModule,
+    MatMenuModule,
   ],
   templateUrl: './nav-bar.component.html',
   styleUrl: './nav-bar.component.scss',
@@ -78,8 +81,13 @@ export class NavBarComponent {
   menuOpen = false;
   darkMode = false;
 
-  constructor(private themeService: ThemeService) {
-    // Subscribe to theme changes
+  private themeService = inject(ThemeService);
+  private authService = inject(AuthService);
+
+  isAuthenticated = this.authService.isAuthenticated;
+  currentUser = this.authService.currentUser;
+
+  constructor() {
     this.themeService.darkMode$.subscribe(isDark => {
       this.darkMode = isDark;
     });
@@ -95,5 +103,10 @@ export class NavBarComponent {
 
   toggleDarkMode() {
     this.themeService.toggleDarkMode();
+  }
+
+  logout() {
+    this.authService.logout();
+    this.closeMenu();
   }
 }

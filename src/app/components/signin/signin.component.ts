@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import {
@@ -10,6 +10,8 @@ import {
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ThemeService } from '../../services/theme.service';
+import { AuthService } from '../../services/auth.service';
+import { AuthRequest } from '../../interfaces/auth.interface';
 
 @Component({
   selector: 'app-signin',
@@ -19,26 +21,32 @@ import { ThemeService } from '../../services/theme.service';
   styleUrl: './signin.component.scss',
 })
 export class SigninComponent implements OnInit, OnDestroy {
-  signinForm: FormGroup;
-  showPassword = false;
-  isSubmitting = false;
-  signinError = '';
-  darkMode = false;
+  private fb = inject(FormBuilder);
+  private router = inject(Router);
+  private themeService = inject(ThemeService);
+  private authService = inject(AuthService);
 
+  darkMode = signal(false);
+  showPassword = signal(false);
+  isSubmitting = signal(false);
+  signinError = signal<string | null>(null);
+
+  signinForm: FormGroup;
   private themeSubscription?: Subscription;
 
-  constructor(
-    private fb: FormBuilder,
-    private router: Router,
-    private themeService: ThemeService
-  ) {
+  constructor() {
     this.signinForm = this.createForm();
   }
 
   ngOnInit(): void {
+    if (this.authService.isAuthenticated()) {
+      this.router.navigate(['/dashboard']);
+      return;
+    }
+
     this.themeSubscription = this.themeService.darkMode$.subscribe(
       isDarkMode => {
-        this.darkMode = isDarkMode;
+        this.darkMode.set(isDarkMode);
       }
     );
   }
@@ -49,55 +57,126 @@ export class SigninComponent implements OnInit, OnDestroy {
 
   private createForm(): FormGroup {
     return this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
+      emailOrUsername: ['', [Validators.required]],
       password: ['', [Validators.required]],
       rememberMe: [false],
     });
   }
+
+  // ============ Validation methods ============
 
   isFieldInvalid(fieldName: string): boolean {
     const field = this.signinForm.get(fieldName);
     return !!(field && field.invalid && (field.dirty || field.touched));
   }
 
-  togglePasswordVisibility(): void {
-    this.showPassword = !this.showPassword;
+  getFieldError(fieldName: string): string | null {
+    const field = this.signinForm.get(fieldName);
+
+    if (!field || !field.errors || !field.touched) {
+      return null;
+    }
+
+    const errors = field.errors;
+
+    if (errors['required']) {
+      return `${this.getFieldDisplayName(fieldName)} is required`;
+    }
+
+    if (errors['email']) {
+      return 'Enter a valid email';
+    }
+
+    return 'Invalid field';
   }
 
-  onSubmit(): void {
-    if (this.signinForm.valid) {
-      this.isSubmitting = true;
-      this.signinError = '';
+  private getFieldDisplayName(fieldName: string): string {
+    const displayNames: { [key: string]: string } = {
+      emailOrUsername: 'Email or username',
+      password: 'Password',
+    };
 
-      const formData = {
-        email: this.signinForm.value.email,
+    return displayNames[fieldName] || fieldName;
+  }
+
+  // ============ UI methods ============
+
+  togglePasswordVisibility(): void {
+    this.showPassword.set(!this.showPassword());
+  }
+
+  clearError(): void {
+    this.signinError.set(null);
+  }
+
+  hasError(): boolean {
+    return !!this.signinError();
+  }
+
+  // ============ Form submission method ============
+
+  onSubmit(): void {
+    if (this.signinForm.valid && !this.isSubmitting()) {
+      this.isSubmitting.set(true);
+      this.signinError.set(null);
+
+      const loginData: AuthRequest = {
+        emailOrUsername: this.signinForm.value.emailOrUsername.trim(),
         password: this.signinForm.value.password,
-        rememberMe: this.signinForm.value.rememberMe,
       };
 
-      // TODO: Replace with actual API call
-      console.log('Sign in data:', formData);
+      this.authService.login(loginData).subscribe({
+        next: response => {
+          console.log('Login successful:', response);
+          this.isSubmitting.set(false);
 
-      // Simulate API call
-      setTimeout(() => {
-        this.isSubmitting = false;
+          if (this.signinForm.value.rememberMe) {
+            console.log('Remember me activated');
+          }
 
-        // Simulate successful or failed login
-        const simulateSuccess = Math.random() > 0.3; // 70% success rate for demo
+          this.router.navigate(['/dashboard']);
+        },
+        error: error => {
+          console.error('Login failed:', error);
+          this.isSubmitting.set(false);
 
-        if (simulateSuccess) {
-          console.log('Sign in successful');
-          // TODO: Handle successful sign in (save token, redirect, etc.)
-          this.router.navigate(['/home']);
-        } else {
-          this.signinError = 'Invalid email or password. Please try again.';
-        }
-      }, 1500);
-    } else {
-      // Mark all fields as touched to show validation errors
-      Object.keys(this.signinForm.controls).forEach(key => {
-        this.signinForm.get(key)?.markAsTouched();
+          if (error.includes('401') || error.includes('Unauthorized')) {
+            this.signinError.set(
+              'Invalid credentials. Please check your email/username and password-'
+            );
+          } else if (error.includes('404')) {
+            this.signinError.set('User not found.');
+          } else if (error.includes('500')) {
+            this.signinError.set('Server error. Please try again later.');
+          } else {
+            this.signinError.set('Login error. Please try again.');
+          }
+        },
       });
+    } else {
+      this.markAllFieldsAsTouched();
     }
+  }
+
+  private markAllFieldsAsTouched(): void {
+    Object.keys(this.signinForm.controls).forEach(key => {
+      this.signinForm.get(key)?.markAsTouched();
+    });
+  }
+
+  // ============ Navigation methods ============
+
+  navigateToRegister(): void {
+    this.router.navigate(['/register']);
+  }
+
+  navigateToForgotPassword(): void {
+    this.router.navigate(['/forgot-password']);
+  }
+
+  // ============ Template methods ============
+
+  getCurrentYear(): number {
+    return new Date().getFullYear();
   }
 }

@@ -5,19 +5,27 @@
             <p class="signin-subtitle">Access your TuneCritic account</p>
         </div>
 
+        <!-- Error Message Global -->
+        <div class="alert alert-error" *ngIf="hasError()" (click)="clearError()">
+            <span class="alert-icon">⚠️</span>
+            <span class="alert-text">{{ signinError() }}</span>
+            <button type="button" class="alert-close" aria-label="Close error message">×</button>
+        </div>
+
         <form [formGroup]="signinForm" (ngSubmit)="onSubmit()" class="signin-form">
-            <!-- Email Field -->
+            <!-- Email or Username Field -->
             <div class="form-group">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" id="email" formControlName="email" class="form-input"
-                    [class.error]="isFieldInvalid('email')" placeholder="your@email.com" autocomplete="email" />
-                <div class="error-message" *ngIf="isFieldInvalid('email')">
-                    <span *ngIf="signinForm.get('email')?.errors?.['required']">
-                        Email is required
-                    </span>
-                    <span *ngIf="signinForm.get('email')?.errors?.['email']">
-                        Please enter a valid email
-                    </span>
+                <label for="emailOrUsername" class="form-label">Email or Username</label>
+                <input
+                    type="text"
+                    id="emailOrUsername"
+                    formControlName="emailOrUsername"
+                    class="form-input"
+                    [class.error]="isFieldInvalid('emailOrUsername')"
+                    placeholder="your@email.com or username"
+                    autocomplete="username" />
+                <div class="error-message" *ngIf="isFieldInvalid('emailOrUsername')">
+                    {{ getFieldError('emailOrUsername') }}
                 </div>
             </div>
 
@@ -25,18 +33,24 @@
             <div class="form-group">
                 <label for="password" class="form-label">Password</label>
                 <div class="password-wrapper">
-                    <input [type]="showPassword ? 'text' : 'password'" id="password" formControlName="password"
-                        class="form-input" [class.error]="isFieldInvalid('password')" placeholder="Your password"
+                    <input
+                        [type]="showPassword() ? 'text' : 'password'"
+                        id="password"
+                        formControlName="password"
+                        class="form-input"
+                        [class.error]="isFieldInvalid('password')"
+                        placeholder="Your password"
                         autocomplete="current-password" />
-                    <button type="button" class="password-toggle" (click)="togglePasswordVisibility()"
-                        [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'">
-                        {{ showPassword ? '🙈' : '👁️' }}
+                    <button
+                        type="button"
+                        class="password-toggle"
+                        (click)="togglePasswordVisibility()"
+                        [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'">
+                        {{ showPassword() ? '🙈' : '👁️' }}
                     </button>
                 </div>
                 <div class="error-message" *ngIf="isFieldInvalid('password')">
-                    <span *ngIf="signinForm.get('password')?.errors?.['required']">
-                        Password is required
-                    </span>
+                    {{ getFieldError('password') }}
                 </div>
             </div>
 
@@ -47,24 +61,46 @@
                     <span class="checkmark"></span>
                     <span class="checkbox-label">Remember me</span>
                 </label>
-                <a href="#" class="forgot-password">Forgot your password?</a>
-            </div>
-
-            <!-- Error Message -->
-            <div class="signin-error" *ngIf="signinError">
-                {{ signinError }}
+                <button
+                    type="button"
+                    class="forgot-password"
+                    (click)="navigateToForgotPassword()">
+                    Forgot your password?
+                </button>
             </div>
 
             <!-- Submit Button -->
-            <button type="submit" class="signin-button" [disabled]="isSubmitting" [class.loading]="isSubmitting">
-                <span *ngIf="!isSubmitting">Sign In</span>
-                <span *ngIf="isSubmitting">Signing in...</span>
+            <button
+                type="submit"
+                class="signin-button"
+                [disabled]="signinForm.invalid || isSubmitting()"
+                [class.loading]="isSubmitting()">
+                <span *ngIf="!isSubmitting()" class="button-text">
+                    <span class="button-icon">🎵</span>
+                    Sign In
+                </span>
+                <span *ngIf="isSubmitting()" class="button-loading">
+                    <span class="spinner"></span>
+                    Signing in...
+                </span>
             </button>
         </form>
 
         <!-- Sign Up Link -->
         <div class="signup-link">
-            <p>Don't have an account? <a routerLink="/signup">Sign up here</a></p>
+            <p>Don't have an account?
+                <button
+                    type="button"
+                    class="signup-link-button"
+                    (click)="navigateToRegister()">
+                    Sign up here
+                </button>
+            </p>
+        </div>
+
+        <!-- Additional Options -->
+        <div class="signin-footer">
+            <p class="copyright">© {{ getCurrentYear() }} TuneCritic. All rights reserved.</p>
         </div>
     </div>
 </div>

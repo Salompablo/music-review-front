@@ -6,12 +6,6 @@
   transition: var(--theme-transition);
 }
 
-// Dark mode styles applied when body has .dark class
-body.dark :host {
-  background-color: var(--color-dark-bg);
-  color: var(--color-dark-text);
-}
-
 .signin-container {
   min-height: 100vh;
   display: flex;
@@ -23,16 +17,11 @@ body.dark :host {
 .signin-card {
   background-color: var(--color-light-surface);
   border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--box-shadow-light);
   padding: 2rem;
   width: 100%;
   max-width: 500px;
   transition: var(--theme-transition);
-
-  body.dark & {
-    background-color: var(--color-dark-surface);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  }
 
   @media (min-width: 768px) {
     padding: 3rem;
@@ -182,6 +171,62 @@ body.dark :host {
   }
 }
 
+.alert {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  cursor: pointer;
+  transition: var(--theme-transition);
+
+  &.alert-error {
+    background-color: rgba(220, 38, 38, 0.1);
+    border: 1px solid rgba(220, 38, 38, 0.3);
+    color: var(--color-error);
+
+    body.dark & {
+      background-color: rgba(220, 38, 38, 0.15);
+      border-color: rgba(220, 38, 38, 0.4);
+    }
+  }
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.alert-icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.alert-text {
+  flex: 1;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.alert-close {
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: var(--theme-transition);
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+
+    body.dark & {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+  }
+}
+
 .form-options {
   display: flex;
   justify-content: space-between;
@@ -200,17 +245,69 @@ body.dark :host {
     align-items: center;
     gap: 0.5rem;
     cursor: pointer;
+    position: relative;
 
     .checkbox {
       width: 18px;
       height: 18px;
-      accent-color: var(--color-primary);
+      opacity: 0;
+      position: absolute;
+      cursor: pointer;
+    }
+
+    .checkmark {
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--color-border-light);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--theme-transition);
+      background-color: var(--color-light-bg);
+
+      body.dark & {
+        border-color: var(--color-border-dark);
+        background-color: var(--color-dark-bg);
+      }
+
+      &::after {
+        content: '✓';
+        color: var(--color-white);
+        font-size: 12px;
+        font-weight: bold;
+        opacity: 0;
+        transition: var(--theme-transition);
+      }
+    }
+
+    input[type='checkbox']:checked + .checkmark {
+      background-color: var(--color-primary);
+      border-color: var(--color-primary);
+
+      body.dark & {
+        background-color: var(--color-primary-light);
+        border-color: var(--color-primary-light);
+      }
+
+      &::after {
+        opacity: 1;
+      }
+    }
+
+    input[type='checkbox']:focus + .checkmark {
+      box-shadow: 0 0 0 2px rgba(0, 126, 167, 0.3);
+
+      body.dark & {
+        box-shadow: 0 0 0 2px rgba(0, 168, 232, 0.3);
+      }
     }
 
     .checkbox-label {
       font-size: 0.9rem;
       color: var(--color-light-text);
       transition: var(--theme-transition);
+      user-select: none;
 
       body.dark & {
         color: var(--color-dark-text);
@@ -219,11 +316,16 @@ body.dark :host {
   }
 
   .forgot-password {
+    background: none;
+    border: none;
     color: var(--color-primary);
-    text-decoration: none;
     font-size: 0.9rem;
     font-weight: 600;
+    cursor: pointer;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
     transition: var(--theme-transition);
+    text-decoration: none;
 
     body.dark & {
       color: var(--color-primary-light);
@@ -231,11 +333,26 @@ body.dark :host {
 
     &:hover {
       color: var(--color-hover);
-      text-decoration: underline;
+      background-color: rgba(0, 126, 167, 0.08);
+      transform: translateY(-1px);
 
       body.dark & {
         color: var(--color-primary);
+        background-color: rgba(0, 168, 232, 0.12);
       }
+    }
+
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(0, 126, 167, 0.3);
+
+      body.dark & {
+        box-shadow: 0 0 0 2px rgba(0, 168, 232, 0.4);
+      }
+    }
+
+    &:active {
+      transform: translateY(0);
     }
   }
 }
@@ -263,6 +380,8 @@ body.dark :host {
   transition: var(--theme-transition);
   margin-top: 1rem;
   width: 100%;
+  position: relative;
+  overflow: hidden;
 
   body.dark & {
     background-color: var(--color-primary-light);
@@ -297,7 +416,43 @@ body.dark :host {
   }
 
   &.loading {
-    opacity: 0.8;
+    cursor: not-allowed;
+  }
+}
+
+.button-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.button-icon {
+  font-size: 1.1rem;
+}
+
+.button-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid var(--color-white);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }
 
@@ -320,25 +475,83 @@ body.dark :host {
     body.dark & {
       color: var(--color-dark-text);
     }
+  }
 
-    a {
-      color: var(--color-primary);
-      text-decoration: none;
-      font-weight: 600;
-      transition: var(--theme-transition);
+  .signup-link-button {
+    background: none;
+    border: none;
+    color: var(--color-primary);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    transition: var(--theme-transition);
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-left: 0.25rem;
+
+    body.dark & {
+      color: var(--color-primary-light);
+    }
+
+    &:hover {
+      color: var(--color-hover);
+      background-color: rgba(0, 126, 167, 0.08);
+      transform: translateY(-1px);
 
       body.dark & {
-        color: var(--color-primary-light);
+        color: var(--color-primary);
+        background-color: rgba(0, 168, 232, 0.12);
       }
+    }
 
-      &:hover {
-        color: var(--color-hover);
-        text-decoration: underline;
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(0, 126, 167, 0.3);
 
-        body.dark & {
-          color: var(--color-primary);
-        }
+      body.dark & {
+        box-shadow: 0 0 0 2px rgba(0, 168, 232, 0.4);
       }
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: 0.25rem;
+      left: 50%;
+      background-color: var(--color-primary);
+      transition: var(--theme-transition);
+      transform: translateX(-50%);
+    }
+
+    &:hover::after {
+      width: calc(100% - 2rem);
+    }
+  }
+}
+
+.signin-footer {
+  text-align: center;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+
+  .copyright {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--color-light-text);
+    opacity: 0.7;
+
+    body.dark & {
+      color: var(--color-dark-text);
     }
   }
 }

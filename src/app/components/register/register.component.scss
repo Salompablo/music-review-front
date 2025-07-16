@@ -6,11 +6,6 @@
   transition: var(--theme-transition);
 }
 
-body.dark :host {
-  background-color: var(--color-dark-bg);
-  color: var(--color-dark-text);
-}
-
 .register-container {
   min-height: 100vh;
   display: flex;
@@ -22,16 +17,11 @@ body.dark :host {
 .register-card {
   background-color: var(--color-light-surface);
   border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--box-shadow-light);
   padding: 2rem;
   width: 100%;
   max-width: 600px;
   transition: var(--theme-transition);
-
-  body.dark & {
-    background-color: var(--color-dark-surface);
-    box-shadow: 0 8px 32px rgba(255, 255, 255, 0.1);
-  }
 
   @media (min-width: 768px) {
     padding: 3rem;

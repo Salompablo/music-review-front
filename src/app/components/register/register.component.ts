@@ -172,9 +172,9 @@ export class RegisterComponent implements OnInit, OnDestroy {
           this.isSubmitting.set(false);
 
           if (error.includes('already exists')) {
-            this.errorMessage.set('Username or email is already registered');
+            this.errorMessage.set('Username or email is already registered.');
           } else if (error.includes('Username already taken')) {
-            this.errorMessage.set('Username is already taken');
+            this.errorMessage.set('Username is already taken.');
           } else {
             this.errorMessage.set('Registration error.Please try again.');
           }

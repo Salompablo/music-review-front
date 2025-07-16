@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ThemeService } from '../../services/theme.service';
 import { AuthService } from '../../services/auth.service';
+import { ConfigService } from '../../services/config.service';
 import { SignupRequest } from '../../interfaces/auth.interface';
 
 @Component({
@@ -25,6 +26,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private themeService = inject(ThemeService);
   private authService = inject(AuthService);
+  private configService = inject(ConfigService);
 
   darkMode = signal(false);
   showPassword = signal(false);
@@ -161,14 +163,14 @@ export class RegisterComponent implements OnInit, OnDestroy {
       // API call
       this.authService.register(signupData).subscribe({
         next: response => {
-          console.log('Registration successful:', response);
+          this.configService.logSecure('Registration successful');
           this.isSubmitting.set(false);
 
           // Auto redirect
           this.router.navigate(['/dashboard']);
         },
         error: error => {
-          console.error('Registration failed:', error);
+          this.configService.logError('Registration failed', error);
           this.isSubmitting.set(false);
 
           if (error.includes('already exists')) {

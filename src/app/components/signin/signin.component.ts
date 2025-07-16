@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ThemeService } from '../../services/theme.service';
 import { AuthService } from '../../services/auth.service';
+import { ConfigService } from '../../services/config.service';
 import { AuthRequest } from '../../interfaces/auth.interface';
 
 @Component({
@@ -25,6 +26,7 @@ export class SigninComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private themeService = inject(ThemeService);
   private authService = inject(AuthService);
+  private configService = inject(ConfigService);
 
   darkMode = signal(false);
   showPassword = signal(false);
@@ -127,17 +129,18 @@ export class SigninComponent implements OnInit, OnDestroy {
 
       this.authService.login(loginData).subscribe({
         next: response => {
-          console.log('Login successful:', response);
+          this.configService.logSecure('Login successful');
           this.isSubmitting.set(false);
 
           if (this.signinForm.value.rememberMe) {
-            console.log('Remember me activated');
+            // TODO: Implement remember me functionality
+            this.configService.log('Remember me activated');
           }
 
           this.router.navigate(['/dashboard']);
         },
         error: error => {
-          console.error('Login failed:', error);
+          this.configService.logError('Login failed', error);
           this.isSubmitting.set(false);
 
           if (error.includes('401') || error.includes('Unauthorized')) {

@@ -8,14 +8,12 @@
   display: flex;
   align-items: center;
   padding: 0 1rem;
-  background-color: var(--color-light-bg);
-  color: var(--color-light-text);
+  background-color: var(--color-surface);
+  color: var(--color-text);
   transition: var(--theme-transition);
   box-shadow: 0 2px 4px rgba(0, 23, 31, 0.1);
 
   body.dark & {
-    background-color: var(--color-dark-bg);
-    color: var(--color-dark-text);
     box-shadow: 0 2px 4px rgba(255, 255, 255, 0.1);
   }
 
@@ -30,7 +28,6 @@
     flex: 1;
   }
 
-  // Desktop navigation
   .desktop-nav {
     display: none;
     align-items: center;
@@ -87,13 +84,11 @@
       }
     }
 
-    // Desktop breakpoint
     @media (min-width: 768px) {
       display: flex;
     }
   }
 
-  // Mobile buttons
   .mobile-buttons {
     display: flex;
     gap: 0.5rem;
@@ -108,7 +103,6 @@
       }
     }
 
-    // Hide on desktop
     @media (min-width: 768px) {
       display: none;
     }
@@ -178,7 +172,6 @@
   }
 }
 
-// Overlay/backdrop for menu
 .menu-overlay {
   position: fixed;
   top: 0;
@@ -193,7 +186,6 @@
   transition: var(--theme-transition);
   cursor: pointer;
 
-  // Hide on desktop
   @media (min-width: 768px) {
     display: none;
   }
@@ -209,22 +201,21 @@
 }
 
 .mobile-menu {
-  background-color: var(--color-light-bg);
-  color: var(--color-light-text);
+  background-color: var(--color-surface);
+  color: var(--color-text);
   padding: 0 1rem;
   position: absolute;
   top: 56px;
   right: 0;
   left: 0;
-  z-index: 1001; // Higher than overlay
+  z-index: 1001;
   box-shadow: 0 8px 16px rgba(0, 23, 31, 0.15);
   overflow: hidden;
   transition: var(--theme-transition);
   border: 1px solid var(--color-border-light);
   border-top: none;
   border-radius: 0 0 8px 8px;
-
-  // Hide on desktop
+  
   @media (min-width: 768px) {
     display: none;
   }

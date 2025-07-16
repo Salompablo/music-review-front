@@ -1,4 +1,9 @@
-import { AuthResponse, AuthRequest, SignupRequest, RefreshTokenRequest } from './../interfaces/auth.interface';
+import {
+  AuthResponse,
+  AuthRequest,
+  SignupRequest,
+  RefreshTokenRequest,
+} from './../interfaces/auth.interface';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { ApiService } from './api.service';
 import { Router } from '@angular/router';
@@ -30,10 +35,13 @@ export class AuthService {
   /**
    * Loggin
    */
-  login(credentials: AuthRequest): Observable<AuthResponse> {
+  login(
+    credentials: AuthRequest,
+    rememberMe: boolean = false
+  ): Observable<AuthResponse> {
     return this.apiService.post<AuthResponse>('/auth', credentials).pipe(
       tap(response => {
-        this.setAuthData(response);
+        this.setAuthData(response, rememberMe);
       }),
       catchError(error => {
         console.error('Login error:', error);
@@ -173,7 +181,11 @@ export class AuthService {
    * Get refresh token
    */
   getRefreshToken(): string | null {
-    return localStorage.getItem('refreshToken');
+    // Check localStorage first, then sessionStorage
+    return (
+      localStorage.getItem('refreshToken') ||
+      sessionStorage.getItem('refreshToken')
+    );
   }
 
   /**
@@ -196,16 +208,23 @@ export class AuthService {
    * Initialize authentication
    */
   private initializeAuth(): void {
-    const token = localStorage.getItem('token');
-    const user = localStorage.getItem('user');
+    // Check localStorage first (persistent - remember me)
+    let token = localStorage.getItem('token');
+    let user = localStorage.getItem('user');
 
-    if(token && user) {
-      try{
+    // If not found in localStorage, check sessionStorage (temporary)
+    if (!token || !user) {
+      token = sessionStorage.getItem('token');
+      user = sessionStorage.getItem('user');
+    }
+
+    if (token && user) {
+      try {
         const userProfile = JSON.parse(user);
         this.tokenSignal.set(token);
         this.userSignal.set(userProfile);
         this.currentUserSubject.next(userProfile);
-      } catch (error){
+      } catch (error) {
         console.error('Error parsing stored user data:', error);
         this.clearAuthData();
       }
@@ -215,7 +234,10 @@ export class AuthService {
   /**
    * Establish authentication data
    */
-  private setAuthData(response: AuthResponse): void {
+  private setAuthData(
+    response: AuthResponse,
+    rememberMe: boolean = false
+  ): void {
     const userProfile: UserProfile = {
       userId: response.id,
       username: response.username,
@@ -223,13 +245,16 @@ export class AuthService {
       active: true,
       provider: 'LOCAL' as any,
       roles: ['ROLE_USER'],
-      permissions: ['READ']
+      permissions: ['READ'],
     };
 
-    // Save in localStorage
-    localStorage.setItem('token', response.token);
-    localStorage.setItem('refreshToken', response.refreshToken);
-    localStorage.setItem('user', JSON.stringify(userProfile));
+    // Choose storage based on rememberMe option
+    const storage = rememberMe ? localStorage : sessionStorage;
+
+    // Save in chosen storage
+    storage.setItem('token', response.token);
+    storage.setItem('refreshToken', response.refreshToken);
+    storage.setItem('user', JSON.stringify(userProfile));
 
     // Update signals
     this.tokenSignal.set(response.token);
@@ -250,13 +275,17 @@ export class AuthService {
    * Clear authentication data
    */
   private clearAuthData(): void {
+    // Clear from both storage types
     localStorage.removeItem('token');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
+
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('refreshToken');
+    sessionStorage.removeItem('user');
 
     this.tokenSignal.set(null);
     this.userSignal.set(null);
     this.currentUserSubject.next(null);
   }
-
 }

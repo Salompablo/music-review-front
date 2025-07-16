@@ -1,0 +1,36 @@
+<div class="toast-container">
+      @for (toast of toastService.toasts$(); track toast.id) {
+        <div
+          class="toast toast-{{ toast.type }}"
+          [@slideIn]
+          (click)="remove(toast.id)"
+        >
+          <div class="toast-icon">
+            @switch (toast.type) {
+              @case ('success') {
+                ✓
+              }
+              @case ('error') {
+                ⚠️
+              }
+              @case ('warning') {
+                ⚠️
+              }
+              @case ('info') {
+                ℹ️
+              }
+            }
+          </div>
+          <div class="toast-content">
+            <p class="toast-message">{{ toast.message }}</p>
+          </div>
+          <button
+            class="toast-close"
+            (click)="remove(toast.id)"
+            aria-label="Close"
+          >
+            ×
+          </button>
+        </div>
+      }
+    </div>

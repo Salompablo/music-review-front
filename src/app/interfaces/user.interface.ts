@@ -1,4 +1,5 @@
 import { RoleEntity } from './auth.interface';
+import { Song, Album } from './music.interface';
 
 export interface User {
   userId: number;
@@ -56,6 +57,17 @@ export interface Reaction {
   createdAt?: string;
 }
 
+export interface Comment {
+  commentId: number;
+  reviewId: number;
+  userId: number;
+  username: string;
+  text: string;
+  createdAt: string;
+  commentType: CommentType;
+  active: boolean;
+}
+
 export interface Review {
   reviewId: number;
   rating: number;
@@ -65,6 +77,18 @@ export interface Review {
   userId: number;
   username?: string;
 }
+
+export interface SongReview extends Review {
+  songId: number;
+  song?: Song;
+}
+
+export interface AlbumReview extends Review {
+  albumId: number;
+  album?: Album;
+}
+
+export type MusicReview = SongReview | AlbumReview;
 
 export enum ReactionType {
   LIKE = 'LIKE',
@@ -87,4 +111,14 @@ export interface UpdateUserProfileRequest {
   username?: string;
   profilePictureUrl?: string;
   biography?: string;
+}
+
+export interface UserStats {
+  totalReviews: number;
+  songReviews: number;
+  albumReviews: number;
+  totalComments: number;
+  totalReactions: number;
+  avgRating: number;
+  joinDate: string;
 }

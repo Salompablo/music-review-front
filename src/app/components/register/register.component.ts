@@ -164,34 +164,23 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
       // API call
       this.authService.register(signupData).subscribe({
-        next: response => {
+        next: () => {
           this.configService.logSecure('Registration successful');
           this.isSubmitting.set(false);
 
-          // Show success toast
           this.toastService.success(
             'Account created successfully! Please sign in to continue.',
             5000
           );
 
-          // Navigate to home page instead of dashboard
           this.router.navigate(['/home']);
         },
         error: error => {
           this.configService.logError('Registration failed', error);
           this.isSubmitting.set(false);
-
-          if (error.includes('already exists')) {
-            this.errorMessage.set('Username or email is already registered.');
-          } else if (error.includes('Username already taken')) {
-            this.errorMessage.set('Username is already taken.');
-          } else {
-            this.errorMessage.set('Registration error.Please try again.');
-          }
         },
       });
     } else {
-      //Mark all fields as touched to show errors
       this.markAllFieldsAsTouched();
     }
   }

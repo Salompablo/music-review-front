@@ -42,10 +42,6 @@ export class AuthService {
     return this.apiService.post<AuthResponse>('/auth', credentials).pipe(
       tap(response => {
         this.setAuthData(response, rememberMe);
-      }),
-      catchError(error => {
-        console.error('Login error:', error);
-        return throwError(() => error);
       })
     );
   }
@@ -57,10 +53,6 @@ export class AuthService {
     return this.apiService.post<AuthResponse>('/auth/register', userData).pipe(
       tap(response => {
         this.setAuthData(response);
-      }),
-      catchError(error => {
-        console.error('Registration error:', error);
-        return throwError(() => error);
       })
     );
   }
@@ -181,7 +173,6 @@ export class AuthService {
    * Get refresh token
    */
   getRefreshToken(): string | null {
-    // Check localStorage first, then sessionStorage
     return (
       localStorage.getItem('refreshToken') ||
       sessionStorage.getItem('refreshToken')
@@ -208,11 +199,9 @@ export class AuthService {
    * Initialize authentication
    */
   private initializeAuth(): void {
-    // Check localStorage first (persistent - remember me)
     let token = localStorage.getItem('token');
     let user = localStorage.getItem('user');
 
-    // If not found in localStorage, check sessionStorage (temporary)
     if (!token || !user) {
       token = sessionStorage.getItem('token');
       user = sessionStorage.getItem('user');
@@ -248,15 +237,12 @@ export class AuthService {
       permissions: ['READ'],
     };
 
-    // Choose storage based on rememberMe option
     const storage = rememberMe ? localStorage : sessionStorage;
 
-    // Save in chosen storage
     storage.setItem('token', response.token);
     storage.setItem('refreshToken', response.refreshToken);
     storage.setItem('user', JSON.stringify(userProfile));
 
-    // Update signals
     this.tokenSignal.set(response.token);
     this.userSignal.set(userProfile);
     this.currentUserSubject.next(userProfile);
@@ -275,7 +261,6 @@ export class AuthService {
    * Clear authentication data
    */
   private clearAuthData(): void {
-    // Clear from both storage types
     localStorage.removeItem('token');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');

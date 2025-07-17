@@ -31,17 +31,6 @@ export interface Song {
   releaseDate: string;
 }
 
-export interface Comment {
-  commentId: number;
-  reviewId: number;
-  userId: number;
-  username: string;
-  text: string;
-  createdAt: string;
-  commentType: CommentType;
-  active: boolean;
-}
-
 export interface ArtistRequest {
   spotifyId: string;
   name: string;

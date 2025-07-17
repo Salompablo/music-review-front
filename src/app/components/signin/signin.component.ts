@@ -130,7 +130,7 @@ export class SigninComponent implements OnInit, OnDestroy {
       const rememberMe = this.signinForm.value.rememberMe;
 
       this.authService.login(loginData, rememberMe).subscribe({
-        next: response => {
+        next: () => {
           this.configService.logSecure('Login successful');
           this.isSubmitting.set(false);
 
@@ -147,20 +147,9 @@ export class SigninComponent implements OnInit, OnDestroy {
           this.router.navigate(['/dashboard']);
         },
         error: error => {
+          // Only handle UI state here
           this.configService.logError('Login failed', error);
           this.isSubmitting.set(false);
-
-          if (error.includes('401') || error.includes('Unauthorized')) {
-            this.signinError.set(
-              'Invalid credentials. Please check your email/username and password-'
-            );
-          } else if (error.includes('404')) {
-            this.signinError.set('User not found.');
-          } else if (error.includes('500')) {
-            this.signinError.set('Server error. Please try again later.');
-          } else {
-            this.signinError.set('Login error. Please try again.');
-          }
         },
       });
     } else {

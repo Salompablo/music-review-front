@@ -9,10 +9,10 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { routes } from './app.routes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from './interceptors/auth.interceptor';
+import { errorInterceptor } from './interceptors/error.interceptor';
 
 function initializeTheme() {
   return () => {
-    // Apply theme immediately before Angular starts rendering
     if (typeof window !== 'undefined') {
       const savedTheme = localStorage.getItem('darkMode');
       const prefersDark = window.matchMedia(
@@ -35,7 +35,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideHttpClient(withInterceptors([authInterceptor])),
+    provideHttpClient(withInterceptors([authInterceptor, errorInterceptor])),
     provideAnimationsAsync(),
     {
       provide: APP_INITIALIZER,

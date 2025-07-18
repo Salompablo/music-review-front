@@ -1,7 +1,13 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { ApiService } from './api.service';
 import { Observable } from 'rxjs';
-import { AlbumReview, SongReview, UpdateUserProfileRequest, UserProfile, UserStats } from '../interfaces/user.interface';
+import {
+  AlbumReview,
+  SongReview,
+  UpdateUserProfileRequest,
+  UserProfile,
+  UserStats,
+} from '../interfaces/user.interface';
 import { AuthService } from './auth.service';
 import { PagedResponse } from '../interfaces/common.interface';
 
@@ -20,14 +26,24 @@ export class UserService {
 
   /**
    * Get user profile by username
-   * Endpoint: GET /api/v1/users/{username}
+   * Endpoint: GET /api/v1/users/username/{username}
    */
   getUserProfile(username: string): Observable<UserProfile> {
-    return this.apiService.get<UserProfile>(`/api/v1/users/${username}`);
+    return this.apiService.get<UserProfile>(
+      `/api/v1/users/username/${username}`
+    );
   }
 
   /**
-   * Get user stats
+   * Get user profile by ID
+   * Endpoint: GET /api/v1/users/{id}
+   */
+  getUserProfileById(userId: number): Observable<UserProfile> {
+    return this.apiService.get<UserProfile>(`/api/v1/users/${userId}`);
+  }
+
+  /**
+   * Get user stats by username
    * Endpoint: GET /api/v1/users/{username}/stats
    */
   getUserStats(username: string): Observable<UserStats> {
@@ -35,7 +51,15 @@ export class UserService {
   }
 
   /**
-   * Get user song reviews (paginated)
+   * Get user stats by ID
+   * Endpoint: GET /api/v1/stats/users/{id}
+   */
+  getUserStatsById(userId: number): Observable<UserStats> {
+    return this.apiService.get<UserStats>(`/api/v1/stats/users/${userId}`);
+  }
+
+  /**
+   * Get user song reviews by username (paginated)
    * Endpoint: GET /api/v1/users/{username}/song-reviews
    */
   getUserSongReviews(
@@ -45,6 +69,20 @@ export class UserService {
   ): Observable<PagedResponse<SongReview>> {
     return this.apiService.get<PagedResponse<SongReview>>(
       `/api/v1/users/${username}/song-reviews?page=${page}&size=${size}`
+    );
+  }
+
+  /**
+   * Get user song reviews by ID (paginated)
+   * Endpoint: GET /api/v1/songreviews/user/{id}/paginated
+   */
+  getUserSongReviewsById(
+    userId: number,
+    page: number = 0,
+    size: number = 10
+  ): Observable<PagedResponse<SongReview>> {
+    return this.apiService.get<PagedResponse<SongReview>>(
+      `/api/v1/songreviews/user/${userId}/paginated?pageNumber=${page}&size=${size}&sort=date`
     );
   }
 
@@ -59,6 +97,20 @@ export class UserService {
   ): Observable<PagedResponse<AlbumReview>> {
     return this.apiService.get<PagedResponse<AlbumReview>>(
       `/api/v1/users/${username}/album-reviews?page=${page}&size=${size}`
+    );
+  }
+
+  /**
+   * Get user album reviews by ID (paginated)
+   * Endpoint: GET /api/v1/albumreviews/user/{id}/paginated
+   */
+  getUserAlbumReviewsById(
+    userId: number,
+    page: number = 0,
+    size: number = 10
+  ): Observable<PagedResponse<AlbumReview>> {
+    return this.apiService.get<PagedResponse<AlbumReview>>(
+      `/api/v1/albumreviews/user/${userId}/paginated?pageNumber=${page}&size=${size}&sort=date`
     );
   }
 
@@ -155,9 +207,11 @@ export class UserService {
    */
   canDeleteContent(contentUserId: number): boolean {
     const currentUser = this.authService.currentUser();
-    return currentUser?.userId === contentUserId ||
-    this.isAdmin() ||
-    this.isModerator();
+    return (
+      currentUser?.userId === contentUserId ||
+      this.isAdmin() ||
+      this.isModerator()
+    );
   }
 
   // ============ Cache methods ============

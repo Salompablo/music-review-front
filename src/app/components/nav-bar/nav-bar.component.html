@@ -28,7 +28,7 @@
         </button>
 
         <mat-menu #userMenu="matMenu" class="user-menu-dropdown">
-          <button mat-menu-item routerLink="/profile">
+          <button mat-menu-item routerLink="/my-profile">
             <mat-icon>person</mat-icon>
             <span>My Profile</span>
           </button>
@@ -86,7 +86,7 @@
     <div class="user-info">
       <span class="username">{{ currentUser()?.username }}</span>
     </div>
-    <a routerLink="/profile" (click)="closeMenu()">My Profile</a>
+    <a routerLink="/my-profile" (click)="closeMenu()">My Profile</a>
     <a routerLink="/settings" (click)="closeMenu()">Settings</a>
     <a (click)="logout()" class="logout-link">Logout</a>
   }

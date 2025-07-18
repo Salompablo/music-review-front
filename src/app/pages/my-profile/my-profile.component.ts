@@ -113,20 +113,29 @@ export class MyProfileComponent implements OnInit {
       this.error.set(null);
 
       const user = this.authService.currentUser();
-      if (!user?.username) {
+      if (!user?.username || !user?.userId) {
+        console.warn('No current user found or missing data');
         this.router.navigate(['/signin']);
         return;
       }
 
-      const [profile, stats] = await Promise.all([
-        firstValueFrom(this.userService.getUserProfile(user.username)),
-        firstValueFrom(this.userService.getUserStats(user.username)),
-      ]);
+      console.log('Loading profile for username:', user.username);
 
-      if (profile && stats) {
+      const profile = await firstValueFrom(
+        this.userService.getUserProfile(user.username)
+      );
+
+      if (profile) {
         this.currentUser.set(profile);
-        this.userStats.set(stats);
         this.initializeForm(profile);
+
+        const stats = await firstValueFrom(
+          this.userService.getUserStatsById(user.userId)
+        );
+
+        if (stats) {
+          this.userStats.set(stats);
+        }
 
         await this.loadReviews();
       }
@@ -150,17 +159,24 @@ export class MyProfileComponent implements OnInit {
 
   private async loadReviews(): Promise<void> {
     const user = this.currentUser();
-    if (!user?.username) return;
+    if (!user?.userId) return;
+
+    if (!this.authService.isValidAuthenticated()) {
+      console.warn('Authentication invalid when loading reviews');
+      return;
+    }
 
     try {
       this.reviewsLoading.set(true);
 
+      console.log('Loading reviews for user ID:', user.userId);
+
       const [songReviewsResponse, albumReviewsResponse] = await Promise.all([
         firstValueFrom(
-          this.userService.getUserSongReviews(user.username, 0, 5)
+          this.userService.getUserSongReviewsById(user.userId, 0, 5)
         ),
         firstValueFrom(
-          this.userService.getUserAlbumReviews(user.username, 0, 5)
+          this.userService.getUserAlbumReviewsById(user.userId, 0, 5)
         ),
       ]);
 
@@ -182,12 +198,12 @@ export class MyProfileComponent implements OnInit {
 
   async loadMoreSongReviews(): Promise<void> {
     const user = this.currentUser();
-    if (!user?.username || !this.hasMoreSongReviews()) return;
+    if (!user?.userId || !this.hasMoreSongReviews()) return;
 
     try {
       const nextPage = this.songReviewsPage() + 1;
       const response = await firstValueFrom(
-        this.userService.getUserSongReviews(user.username, nextPage, 5)
+        this.userService.getUserSongReviewsById(user.userId, nextPage, 5)
       );
 
       if (response) {
@@ -202,12 +218,12 @@ export class MyProfileComponent implements OnInit {
 
   async loadMoreAlbumReviews(): Promise<void> {
     const user = this.currentUser();
-    if (!user?.username || !this.hasMoreAlbumReviews()) return;
+    if (!user?.userId || !this.hasMoreAlbumReviews()) return;
 
     try {
       const nextPage = this.albumReviewsPage() + 1;
       const response = await firstValueFrom(
-        this.userService.getUserAlbumReviews(user.username, nextPage, 5)
+        this.userService.getUserAlbumReviewsById(user.userId, nextPage, 5)
       );
 
       if (response) {

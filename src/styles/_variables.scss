@@ -7,13 +7,17 @@
   --color-light-blue: #00a8e8;
 
   // Dynamic theme colors (automatically switch with body.dark)
-  --color-bg: var(--color-white);
+  --color-background: var(--color-white);
   --color-text: var(--color-dark-navy);
+  --color-text-secondary: rgba(0, 23, 31, 0.7);
   --color-surface: #ffffff;
   --color-border: rgba(0, 23, 31, 0.08);
 
+  // Legacy aliases
+  --color-bg: var(--color-background);
+
   // Backwards compatibility (will be updated in dark mode)
-  --color-light-bg: var(--color-bg);
+  --color-light-bg: var(--color-background);
   --color-light-text: var(--color-text);
   --color-light-surface: var(--color-surface);
   --color-border-light: var(--color-border);
@@ -24,7 +28,9 @@
 
   // Accent colors
   --color-primary: var(--color-blue);
+  --color-primary-dark: var(--color-navy);
   --color-primary-light: var(--color-light-blue);
+  --color-primary-rgb: 0, 126, 167; // RGB values for rgba usage
   --color-accent: var(--color-blue);
   --color-accent-light: var(--color-light-blue);
   --color-hover: var(--color-navy);
@@ -52,11 +58,14 @@
 }
 
 body.dark {
-  --color-bg: var(--color-dark-navy);
+  --color-background: var(--color-dark-navy);
   --color-text: var(--color-white);
+  --color-text-secondary: rgba(255, 255, 255, 0.7);
   --color-surface: #1a1a1a;
   --color-border: rgba(255, 255, 255, 0.15);
 
+  // Legacy aliases
+  --color-bg: var(--color-background);
 
   --color-light-bg: var(--color-dark-navy);
   --color-light-text: var(--color-white);
@@ -64,6 +73,8 @@ body.dark {
   --color-border-light: rgba(255, 255, 255, 0.15);
 
   --color-primary: var(--color-light-blue);
+  --color-primary-dark: var(--color-blue);
+  --color-primary-rgb: 0, 168, 232;
   --color-hover: var(--color-blue);
 
   --box-shadow-light: 0 8px 32px rgba(255, 255, 255, 0.1);

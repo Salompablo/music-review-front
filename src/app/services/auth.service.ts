@@ -166,7 +166,35 @@ export class AuthService {
    * Get token
    */
   getToken(): string | null {
-    return this.tokenSignal() || localStorage.getItem('token');
+    return (
+      this.tokenSignal() ||
+      localStorage.getItem('token') ||
+      sessionStorage.getItem('token')
+    );
+  }
+
+  /**
+   * Check if token is expired
+   */
+  isTokenExpired(): boolean {
+    const token = this.getToken();
+    if (!token) return true;
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const now = Date.now() / 1000;
+      return payload.exp < now;
+    } catch (error) {
+      console.error('Error parsing token:', error);
+      return true;
+    }
+  }
+
+  /**
+   * Check if user is authenticated with valid token
+   */
+  isValidAuthenticated(): boolean {
+    return this.isAuthenticated() && !this.isTokenExpired();
   }
 
   /**

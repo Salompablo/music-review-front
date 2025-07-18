@@ -114,11 +114,33 @@ export interface UpdateUserProfileRequest {
 }
 
 export interface UserStats {
-  totalReviews: number;
-  songReviews: number;
-  albumReviews: number;
-  totalComments: number;
-  totalReactions: number;
-  avgRating: number;
+  id: number;
+  username: string;
+  biography?: string;
+  profilePictureUrl?: string;
   joinDate: string;
+
+  totalAlbumReviews: number;
+  totalSongReviews: number;
+  totalReviews: number;
+  averageRating: number;
+
+  totalComments: number;
+  albumComments: number;
+  songComments: number;
+
+  totalReactions: number;
+  likesGiven: number;
+  lovesGiven: number;
+  wowsGiven: number;
+  dislikesGiven: number;
+
+  likesReceived: number;
+  lovesReceived: number;
+  wowsReceived: number;
+  dislikesReceived: number;
+
+  reviewsThisMonth: number;
+  commentsThisMonth: number;
+  reactionsThisMonth: number;
 }

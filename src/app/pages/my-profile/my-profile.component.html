@@ -1,0 +1,470 @@
+<div class="profile-container">
+  <!-- Loading State -->
+  <div *ngIf="loading()" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading profile...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error() && !loading()" class="error-state">
+    <div class="error-icon">⚠️</div>
+    <p>{{ error() }}</p>
+    <button (click)="refreshProfile()" class="retry-btn">Try Again</button>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!loading() && !error() && currentUser()" class="profile-content">
+    <!-- Top Section: Profile + Stats -->
+    <div class="profile-header">
+      <!-- Profile Info Section -->
+      <div class="profile-info">
+        <div class="profile-avatar">
+          <img
+            *ngIf="hasProfileImage"
+            [src]="profileImageUrl"
+            [alt]="currentUser()?.username + ' avatar'"
+            class="avatar-image"
+          />
+          <div *ngIf="!hasProfileImage" class="avatar-initials">
+            {{ userInitials }}
+          </div>
+        </div>
+
+        <div class="profile-details">
+          <!-- View Mode -->
+          <div *ngIf="!isEditMode()" class="profile-view">
+            <h1 class="username">{{ '@' + (currentUser()?.username || '') }}</h1>
+            <p class="email">{{ currentUser()?.email }}</p>
+
+            <div class="roles" *ngIf="currentUser()?.roles?.length">
+              <span class="role-icon">🌟</span>
+              <span class="roles-text">
+                {{ currentUser()?.roles?.join(', ') }}
+              </span>
+            </div>
+
+            <div class="account-type">
+              <span class="provider-icon">🔗</span>
+              <span>{{ accountTypeText }}</span>
+            </div>
+
+            <div class="join-date" *ngIf="userStats()?.joinDate">
+              <span class="date-icon">📅</span>
+              <span>Joined {{ userStats()?.joinDate | date: 'MMM yyyy' }}</span>
+            </div>
+
+            <div class="biography" *ngIf="currentUser()?.biography?.trim()">
+              <span class="bio-icon">📝</span>
+              <p class="bio-text">{{ currentUser()?.biography }}</p>
+            </div>
+
+            <button (click)="toggleEditMode()" class="edit-btn">✏️ Edit Profile</button>
+          </div>
+
+          <!-- Edit Mode -->
+          <div *ngIf="isEditMode()" class="profile-edit">
+            <form #profileEditForm="ngForm">
+              <div class="form-group">
+                <label for="username">Username</label>
+                <input
+                  type="text"
+                  id="username"
+                  [(ngModel)]="profileForm().username"
+                  name="username"
+                  required
+                  [disabled]="isGoogleAccount"
+                  class="form-input"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="profilePicture">Profile Picture URL</label>
+                <input
+                  type="url"
+                  id="profilePicture"
+                  [(ngModel)]="profileForm().profilePictureUrl"
+                  name="profilePictureUrl"
+                  class="form-input"
+                  placeholder="https://example.com/image.jpg"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="biography">Biography</label>
+                <textarea
+                  id="biography"
+                  [(ngModel)]="profileForm().biography"
+                  name="biography"
+                  class="form-textarea"
+                  rows="3"
+                  placeholder="Tell us about yourself..."
+                ></textarea>
+              </div>
+
+              <div class="form-actions">
+                <button
+                  type="button"
+                  (click)="saveProfile()"
+                  [disabled]="saving() || !isFormValid()"
+                  class="save-btn"
+                >
+                  <span *ngIf="!saving()">💾 Save Changes</span>
+                  <span *ngIf="saving()">Saving...</span>
+                </button>
+
+                <button
+                  type="button"
+                  (click)="toggleEditMode()"
+                  [disabled]="saving()"
+                  class="cancel-btn"
+                >
+                  ❌ Cancel
+                </button>
+              </div>
+
+              <div *ngIf="hasUnsavedChanges()" class="unsaved-warning">
+                ⚠️ You have unsaved changes
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Section -->
+      <div class="profile-stats">
+        <h2 class="stats-title">Statistics</h2>
+
+        <div *ngIf="userStats()" class="stats-grid">
+          <!-- Basic Review Statistics -->
+          <div class="stat-card">
+            <div class="stat-icon">📊</div>
+            <div class="stat-info">
+              <span class="stat-number">{{ userStats()?.totalReviews || 0 }}</span>
+              <span class="stat-label">Total Reviews</span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon">🎵</div>
+            <div class="stat-info">
+              <span class="stat-number">{{ userStats()?.totalSongReviews || 0 }}</span>
+              <span class="stat-label">Song Reviews</span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon">💿</div>
+            <div class="stat-info">
+              <span class="stat-number">{{ userStats()?.totalAlbumReviews || 0 }}</span>
+              <span class="stat-label">Album Reviews</span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon">⭐</div>
+            <div class="stat-info">
+              <span class="stat-number">{{ userStats()?.averageRating || 0 | number: '1.1-1' }}</span>
+              <span class="stat-label">Avg Rating</span>
+            </div>
+          </div>
+
+          <!-- Comment Statistics -->
+          <div class="stat-card">
+            <div class="stat-icon">💬</div>
+            <div class="stat-info">
+              <span class="stat-number">{{ userStats()?.totalComments || 0 }}</span>
+              <span class="stat-label">Total Comments</span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon">🎼</div>
+            <div class="stat-info">
+              <span class="stat-number">{{ userStats()?.songComments || 0 }}</span>
+              <span class="stat-label">Song Comments</span>
+            </div>
+          </div>
+
+          <!-- Reaction Statistics - Given -->
+          <div class="stat-card">
+            <div class="stat-icon">❤️</div>
+            <div class="stat-info">
+              <span class="stat-number">{{ userStats()?.totalReactions || 0 }}</span>
+              <span class="stat-label">Reactions Given</span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon">👍</div>
+            <div class="stat-info">
+              <span class="stat-number">{{ userStats()?.likesGiven || 0 }}</span>
+              <span class="stat-label">Likes Given</span>
+            </div>
+          </div>
+
+          <!-- Reaction Statistics - Received -->
+          <div class="stat-card">
+            <div class="stat-icon">🌟</div>
+            <div class="stat-info">
+              <!-- Calculate total positive reactions received -->
+              <span class="stat-number">{{
+                (userStats()?.likesReceived || 0) +
+                (userStats()?.lovesReceived || 0) +
+                (userStats()?.wowsReceived || 0)
+              }}</span>
+              <span class="stat-label">Positive Reactions</span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon">💖</div>
+            <div class="stat-info">
+              <span class="stat-number">{{ userStats()?.lovesReceived || 0 }}</span>
+              <span class="stat-label">Loves Received</span>
+            </div>
+          </div>
+
+          <!-- Monthly Activity Statistics -->
+          <div class="stat-card">
+            <div class="stat-icon">📅</div>
+            <div class="stat-info">
+              <span class="stat-number">{{ userStats()?.reviewsThisMonth || 0 }}</span>
+              <span class="stat-label">Reviews This Month</span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon">💭</div>
+            <div class="stat-info">
+              <span class="stat-number">{{ userStats()?.commentsThisMonth || 0 }}</span>
+              <span class="stat-label">Comments This Month</span>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="!userStats()" class="stats-loading">Loading stats...</div>
+      </div>
+    </div>
+
+    <!-- Reviews Section -->
+    <div class="profile-reviews">
+      <div class="reviews-header">
+        <h2 class="reviews-title">My Reviews</h2>
+
+        <!-- Tab Navigation with updated field names -->
+        <div class="reviews-tabs">
+          <button
+            (click)="changeTab('reviews')"
+            [class.active]="activeTab() === 'reviews'"
+            class="tab-btn"
+          >
+            All Reviews
+          </button>
+          <button
+            (click)="changeTab('song-reviews')"
+            [class.active]="activeTab() === 'song-reviews'"
+            class="tab-btn"
+          >
+            Songs ({{ userStats()?.totalSongReviews || 0 }})
+          </button>
+          <button
+            (click)="changeTab('album-reviews')"
+            [class.active]="activeTab() === 'album-reviews'"
+            class="tab-btn"
+          >
+            Albums ({{ userStats()?.totalAlbumReviews || 0 }})
+          </button>
+        </div>
+      </div>
+
+      <!-- Reviews Content -->
+      <div class="reviews-content">
+        <!-- Loading Reviews -->
+        <div *ngIf="reviewsLoading()" class="reviews-loading">
+          <div class="spinner-small"></div>
+          <span>Loading reviews...</span>
+        </div>
+
+        <!-- All Reviews Tab -->
+        <div *ngIf="activeTab() === 'reviews' && !reviewsLoading()" class="reviews-list">
+          <!-- Song Reviews -->
+          <div *ngFor="let review of songReviews()" class="review-card song-review">
+            <div class="review-cover">
+              <img
+                *ngIf="review.song?.imageUrl"
+                [src]="review.song?.imageUrl"
+                [alt]="review.song?.name"
+                class="cover-image"
+              />
+              <div *ngIf="!review.song?.imageUrl" class="cover-placeholder">🎵</div>
+            </div>
+
+            <div class="review-content">
+              <div class="review-header">
+                <h3 class="review-title">{{ review.song?.name || 'Unknown Song' }}</h3>
+                <span class="review-artist">{{ review.song?.artistName || 'Unknown Artist' }}</span>
+                <div class="review-rating">
+                  <span
+                    *ngFor="let star of [1, 2, 3, 4, 5]"
+                    [class.filled]="star <= review.rating"
+                    class="star"
+                    >⭐</span
+                  >
+                </div>
+              </div>
+
+              <p *ngIf="review.description" class="review-text">{{ review.description }}</p>
+              <div class="review-date">{{ review.date | date: 'MMM d, y' }}</div>
+            </div>
+          </div>
+
+          <!-- Album Reviews -->
+          <div *ngFor="let review of albumReviews()" class="review-card album-review">
+            <div class="review-cover">
+              <img
+                *ngIf="review.album?.imageUrl"
+                [src]="review.album?.imageUrl"
+                [alt]="review.album?.title"
+                class="cover-image"
+              />
+              <div *ngIf="!review.album?.imageUrl" class="cover-placeholder">💿</div>
+            </div>
+
+            <div class="review-content">
+              <div class="review-header">
+                <h3 class="review-title">{{ review.album?.title || 'Unknown Album' }}</h3>
+                <span class="review-artist">{{
+                  review.album?.artistName || 'Unknown Artist'
+                }}</span>
+                <div class="review-rating">
+                  <span
+                    *ngFor="let star of [1, 2, 3, 4, 5]"
+                    [class.filled]="star <= review.rating"
+                    class="star"
+                    >⭐</span
+                  >
+                </div>
+              </div>
+
+              <p *ngIf="review.description" class="review-text">{{ review.description }}</p>
+              <div class="review-date">{{ review.date | date: 'MMM d, y' }}</div>
+            </div>
+          </div>
+
+          <!-- Load More Buttons -->
+          <div class="load-more-section">
+            <button
+              *ngIf="hasMoreSongReviews()"
+              (click)="loadMoreSongReviews()"
+              class="load-more-btn"
+            >
+              Load More Songs
+            </button>
+
+            <button
+              *ngIf="hasMoreAlbumReviews()"
+              (click)="loadMoreAlbumReviews()"
+              class="load-more-btn"
+            >
+              Load More Albums
+            </button>
+          </div>
+        </div>
+
+        <!-- Song Reviews Tab -->
+        <div *ngIf="activeTab() === 'song-reviews' && !reviewsLoading()" class="reviews-list">
+          <div *ngFor="let review of songReviews()" class="review-card song-review">
+            <div class="review-cover">
+              <img
+                *ngIf="review.song?.imageUrl"
+                [src]="review.song?.imageUrl"
+                [alt]="review.song?.name"
+                class="cover-image"
+              />
+              <div *ngIf="!review.song?.imageUrl" class="cover-placeholder">🎵</div>
+            </div>
+
+            <div class="review-content">
+              <div class="review-header">
+                <h3 class="review-title">{{ review.song?.name || 'Unknown Song' }}</h3>
+                <span class="review-artist">{{ review.song?.artistName || 'Unknown Artist' }}</span>
+                <div class="review-rating">
+                  <span
+                    *ngFor="let star of [1, 2, 3, 4, 5]"
+                    [class.filled]="star <= review.rating"
+                    class="star"
+                    >⭐</span
+                  >
+                </div>
+              </div>
+
+              <p *ngIf="review.description" class="review-text">{{ review.description }}</p>
+              <div class="review-date">{{ review.date | date: 'MMM d, y' }}</div>
+            </div>
+          </div>
+
+          <button
+            *ngIf="hasMoreSongReviews()"
+            (click)="loadMoreSongReviews()"
+            class="load-more-btn"
+          >
+            Load More Songs
+          </button>
+        </div>
+
+        <!-- Album Reviews Tab -->
+        <div *ngIf="activeTab() === 'album-reviews' && !reviewsLoading()" class="reviews-list">
+          <div *ngFor="let review of albumReviews()" class="review-card album-review">
+            <div class="review-cover">
+              <img
+                *ngIf="review.album?.imageUrl"
+                [src]="review.album?.imageUrl"
+                [alt]="review.album?.title"
+                class="cover-image"
+              />
+              <div *ngIf="!review.album?.imageUrl" class="cover-placeholder">💿</div>
+            </div>
+
+            <div class="review-content">
+              <div class="review-header">
+                <h3 class="review-title">{{ review.album?.title || 'Unknown Album' }}</h3>
+                <span class="review-artist">{{
+                  review.album?.artistName || 'Unknown Artist'
+                }}</span>
+                <div class="review-rating">
+                  <span
+                    *ngFor="let star of [1, 2, 3, 4, 5]"
+                    [class.filled]="star <= review.rating"
+                    class="star"
+                    >⭐</span
+                  >
+                </div>
+              </div>
+
+              <p *ngIf="review.description" class="review-text">{{ review.description }}</p>
+              <div class="review-date">{{ review.date | date: 'MMM d, y' }}</div>
+            </div>
+          </div>
+
+          <button
+            *ngIf="hasMoreAlbumReviews()"
+            (click)="loadMoreAlbumReviews()"
+            class="load-more-btn"
+          >
+            Load More Albums
+          </button>
+        </div>
+
+        <!-- Empty State -->
+        <div
+          *ngIf="!reviewsLoading() && songReviews().length === 0 && albumReviews().length === 0"
+          class="empty-state"
+        >
+          <div class="empty-icon">📝</div>
+          <h3>No Reviews Yet</h3>
+          <p>Start reviewing your favorite songs and albums!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -39,7 +39,7 @@
             <div class="roles" *ngIf="currentUser()?.roles?.length">
               <span class="role-icon">🌟</span>
               <span class="roles-text">
-                {{ currentUser()?.roles?.join(', ') }}
+                {{ getRolesText() }}
               </span>
             </div>
 
@@ -50,10 +50,10 @@
 
             <div class="join-date" *ngIf="userStats()?.joinDate">
               <span class="date-icon">📅</span>
-              <span>Joined {{ userStats()?.joinDate | date: 'MMM yyyy' }}</span>
+              <span>Joined {{ userStats()?.joinDate | date: 'dd/MM/yyyy' }}</span>
             </div>
 
-            <div class="biography" *ngIf="currentUser()?.biography?.trim()">
+            <div class="biography" *ngIf="currentUser()?.biography">
               <span class="bio-icon">📝</span>
               <p class="bio-text">{{ currentUser()?.biography }}</p>
             </div>
@@ -64,19 +64,6 @@
           <!-- Edit Mode -->
           <div *ngIf="isEditMode()" class="profile-edit">
             <form #profileEditForm="ngForm">
-              <div class="form-group">
-                <label for="username">Username</label>
-                <input
-                  type="text"
-                  id="username"
-                  [(ngModel)]="profileForm().username"
-                  name="username"
-                  required
-                  [disabled]="isGoogleAccount"
-                  class="form-input"
-                />
-              </div>
-
               <div class="form-group">
                 <label for="profilePicture">Profile Picture URL</label>
                 <input
@@ -163,7 +150,9 @@
           <div class="stat-card">
             <div class="stat-icon">⭐</div>
             <div class="stat-info">
-              <span class="stat-number">{{ userStats()?.averageRating || 0 | number: '1.1-1' }}</span>
+              <span class="stat-number">{{
+                userStats()?.averageRating || 0 | number: '1.1-1'
+              }}</span>
               <span class="stat-label">Avg Rating</span>
             </div>
           </div>
@@ -209,8 +198,8 @@
               <!-- Calculate total positive reactions received -->
               <span class="stat-number">{{
                 (userStats()?.likesReceived || 0) +
-                (userStats()?.lovesReceived || 0) +
-                (userStats()?.wowsReceived || 0)
+                  (userStats()?.lovesReceived || 0) +
+                  (userStats()?.wowsReceived || 0)
               }}</span>
               <span class="stat-label">Positive Reactions</span>
             </div>

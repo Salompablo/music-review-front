@@ -82,7 +82,7 @@ export class UserService {
     size: number = 10
   ): Observable<PagedResponse<SongReview>> {
     return this.apiService.get<PagedResponse<SongReview>>(
-      `/api/v1/songreviews/user/${userId}/paginated?pageNumber=${page}&size=${size}&sort=date`
+      `/api/v1/songreviews/user/${userId}?pageNumber=${page}&size=${size}&sort=date`
     );
   }
 
@@ -110,7 +110,7 @@ export class UserService {
     size: number = 10
   ): Observable<PagedResponse<AlbumReview>> {
     return this.apiService.get<PagedResponse<AlbumReview>>(
-      `/api/v1/albumreviews/user/${userId}/paginated?pageNumber=${page}&size=${size}&sort=date`
+      `/api/v1/albumreviews/user/${userId}?pageNumber=${page}&size=${size}&sort=date`
     );
   }
 

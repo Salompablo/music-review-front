@@ -119,10 +119,8 @@ export class MyProfileComponent implements OnInit {
         return;
       }
 
-      console.log('Loading profile for username:', user.username);
-
       const profile = await firstValueFrom(
-        this.userService.getUserProfile(user.username)
+        this.userService.getUserProfileById(user.userId)
       );
 
       if (profile) {
@@ -168,8 +166,6 @@ export class MyProfileComponent implements OnInit {
 
     try {
       this.reviewsLoading.set(true);
-
-      console.log('Loading reviews for user ID:', user.userId);
 
       const [songReviewsResponse, albumReviewsResponse] = await Promise.all([
         firstValueFrom(
@@ -314,5 +310,20 @@ export class MyProfileComponent implements OnInit {
       (user.profilePictureUrl || '') !== (form.profilePictureUrl || '') ||
       (user.biography || '') !== (form.biography || '')
     );
+  }
+
+  // ============ Roles Display ============
+
+  getRolesText(): string {
+    const roles = this.currentUser()?.roles;
+    if (!roles) return '';
+    const roleMap: Record<string, string> = {
+      ROLE_USER: 'Basic user',
+      ROLE_ADMIN: 'Admin',
+      ROLE_MODERATOR: 'Moderator',
+    };
+    return roles
+      .map((r: any) => roleMap[r.role || r] || r.role || r)
+      .join(', ');
   }
 }
